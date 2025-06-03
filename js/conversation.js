@@ -101,29 +101,68 @@ function initConversationSystem() {
     // "How to Ask" Modal Logic
     const howToAskBtn = document.getElementById('how-to-ask-btn');
     const howToAskModal = document.getElementById('how-to-ask-modal');
-    const closeHowToAskModalBtn = document.getElementById('close-how-to-ask-modal');
-    const gotItHowToAskModalBtn = document.getElementById('got-it-how-to-ask-modal');
+    const gotItHowToAskBtn = document.getElementById('got-it-how-to-ask-modal');
 
-    if (howToAskBtn && howToAskModal) {
+    if (howToAskBtn && howToAskModal && gotItHowToAskBtn) {
         howToAskBtn.addEventListener('click', () => {
-            howToAskModal.classList.replace('hidden', 'flex');
-            const modalContent = howToAskModal.querySelector('.modal-scrollable > div:first-child');
-             if (modalContent) modalContent.scrollTop = 0;
+            howToAskModal.classList.remove('hidden');
         });
-    }
-    if (closeHowToAskModalBtn && howToAskModal) {
-        closeHowToAskModalBtn.addEventListener('click', () => howToAskModal.classList.replace('flex', 'hidden'));
-    }
-    if (gotItHowToAskModalBtn && howToAskModal) {
-        gotItHowToAskModalBtn.addEventListener('click', () => howToAskModal.classList.replace('flex', 'hidden'));
-    }
-     if (howToAskModal) {
-        howToAskModal.addEventListener('click', function(event) {
-            if (event.target === howToAskModal) { 
-                howToAskModal.classList.replace('flex', 'hidden');
+
+        gotItHowToAskBtn.addEventListener('click', () => {
+            howToAskModal.classList.add('hidden');
+        });
+
+        // 点击遮罩关闭
+        howToAskModal.addEventListener('click', (e) => {
+            if (e.target === howToAskModal) {
+                howToAskModal.classList.add('hidden');
             }
         });
     }
+
+    // API Configuration Modal Logic
+    const apiConfigBtn = document.getElementById('api-config-btn');
+    const apiConfigModal = document.getElementById('api-config-modal');
+    const closeApiConfigBtn = document.getElementById('close-api-config');
+    const saveApiKeyBtn = document.getElementById('save-api-key');
+    const testApiKeyBtn = document.getElementById('test-api-key');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const apiStatus = document.getElementById('api-status');
+
+    if (apiConfigBtn && apiConfigModal) {
+        apiConfigBtn.addEventListener('click', () => {
+            openApiConfigModal();
+        });
+
+        if (closeApiConfigBtn) {
+            closeApiConfigBtn.addEventListener('click', () => {
+                apiConfigModal.classList.add('hidden');
+            });
+        }
+
+        if (saveApiKeyBtn) {
+            saveApiKeyBtn.addEventListener('click', () => {
+                saveApiKey();
+            });
+        }
+
+        if (testApiKeyBtn) {
+            testApiKeyBtn.addEventListener('click', () => {
+                testApiConnection();
+            });
+        }
+
+        // 点击遮罩关闭
+        apiConfigModal.addEventListener('click', (e) => {
+            if (e.target === apiConfigModal) {
+                apiConfigModal.classList.add('hidden');
+            }
+        });
+    }
+
+    // 检查API状态并显示环境提示
+    checkApiStatus();
+
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && howToAskModal && howToAskModal.classList.contains('flex')) {
             howToAskModal.classList.replace('flex', 'hidden');
@@ -451,4 +490,163 @@ function populateSuggestedQuestions(primaryMentor) {
         questionButton.className = 'text-xs bg-slate-700/80 border border-slate-600 rounded-full px-3 py-1.5 text-sky-300 hover:bg-slate-600/80 hover:border-sky-500 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500';
         container.appendChild(questionButton);
     });
+}
+
+// API Configuration Functions
+function openApiConfigModal() {
+    const apiConfigModal = document.getElementById('api-config-modal');
+    const apiKeyInput = document.getElementById('api-key-input');
+    
+    if (apiConfigModal && apiKeyInput) {
+        // 显示当前API密钥（掩码形式）
+        const currentKey = ApiManager.hasApiKey() ? '已设置 (点击输入框可更改)' : '';
+        apiKeyInput.placeholder = currentKey || '输入您的API密钥';
+        
+        // 更新状态显示
+        updateApiStatus();
+        
+        apiConfigModal.classList.remove('hidden');
+    }
+}
+
+function updateApiStatus() {
+    const apiStatus = document.getElementById('api-status');
+    if (!apiStatus) return;
+    
+    const hasKey = ApiManager.hasApiKey();
+    const isGitHubPages = CONFIG.ENVIRONMENT.isGitHubPages;
+    
+    let statusHtml = '';
+    
+    if (hasKey) {
+        statusHtml = `
+            <div class="flex items-center">
+                <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                <span class="text-green-400">API密钥已配置</span>
+            </div>
+        `;
+    } else {
+        if (isGitHubPages) {
+            statusHtml = `
+                <div class="flex items-center">
+                    <div class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
+                    <span class="text-yellow-400">GitHub Pages演示模式 - 需要配置API密钥</span>
+                </div>
+            `;
+        } else {
+            statusHtml = `
+                <div class="flex items-center">
+                    <div class="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
+                    <span class="text-red-400">未配置API密钥</span>
+                </div>
+            `;
+        }
+    }
+    
+    apiStatus.innerHTML = statusHtml;
+}
+
+function saveApiKey() {
+    const apiKeyInput = document.getElementById('api-key-input');
+    const apiConfigModal = document.getElementById('api-config-modal');
+    
+    if (!apiKeyInput) return;
+    
+    const apiKey = apiKeyInput.value.trim();
+    
+    if (!apiKey) {
+        alert('请输入API密钥');
+        return;
+    }
+    
+    // 保存API密钥
+    ApiManager.setApiKey(apiKey);
+    
+    // 更新状态
+    updateApiStatus();
+    
+    // 清空输入框
+    apiKeyInput.value = '';
+    
+    // 显示成功消息
+    UIComponents.showNotification('API密钥已保存', 'success');
+    
+    // 关闭模态框
+    if (apiConfigModal) {
+        apiConfigModal.classList.add('hidden');
+    }
+}
+
+async function testApiConnection() {
+    const testApiKeyBtn = document.getElementById('test-api-key');
+    const apiKeyInput = document.getElementById('api-key-input');
+    
+    if (!testApiKeyBtn) return;
+    
+    // 设置按钮为加载状态
+    const originalText = testApiKeyBtn.textContent;
+    testApiKeyBtn.textContent = '测试中...';
+    testApiKeyBtn.disabled = true;
+    
+    try {
+        let testKey = '';
+        
+        // 使用输入框中的密钥或已保存的密钥
+        if (apiKeyInput && apiKeyInput.value.trim()) {
+            testKey = apiKeyInput.value.trim();
+        } else {
+            testKey = ApiManager.getApiKey();
+        }
+        
+        if (!testKey) {
+            throw new Error('请先输入API密钥');
+        }
+        
+        // 发送测试请求
+        const response = await fetch(CONFIG.API.URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${testKey}`
+            },
+            body: JSON.stringify({
+                model: CONFIG.API.MODEL,
+                messages: [
+                    { role: 'user', content: '测试连接' }
+                ],
+                max_tokens: 10,
+                temperature: 0.7
+            })
+        });
+        
+        if (response.ok) {
+            UIComponents.showNotification('API连接测试成功！', 'success');
+        } else {
+            throw new Error(`API测试失败: ${response.status} ${response.statusText}`);
+        }
+        
+    } catch (error) {
+        console.error('API测试失败:', error);
+        UIComponents.showNotification(`连接测试失败: ${error.message}`, 'error');
+    } finally {
+        // 恢复按钮状态
+        testApiKeyBtn.textContent = originalText;
+        testApiKeyBtn.disabled = false;
+    }
+}
+
+function checkApiStatus() {
+    const isGitHubPages = CONFIG.ENVIRONMENT.isGitHubPages;
+    const hasApiKey = ApiManager.hasApiKey();
+    
+    // 如果是GitHub Pages环境且没有API密钥，显示提示
+    if (isGitHubPages && !hasApiKey) {
+        setTimeout(() => {
+            UIComponents.showNotification(
+                '🔑 GitHub Pages演示模式：点击"API配置"按钮设置您的SiliconFlow API密钥以体验完整功能', 
+                'info', 
+                8000
+            );
+        }, 2000);
+    }
 }

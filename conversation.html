@@ -80,7 +80,7 @@
                         <li>
                             <a href="#" class="group flex items-center px-4 py-3 rounded-lg sidebar-link-inactive" onclick="alert('功能开发中'); return false;">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                                 账户设置
@@ -153,10 +153,18 @@
                             <p id="chat-header-subtitle" class="text-xs md:text-sm text-sky-400 truncate">请稍候</p>
                         </div>
                     </div>
-                    <button id="how-to-ask-btn" class="ml-auto flex-shrink-0 text-slate-400 hover:text-sky-400 transition-colors p-2 rounded-full hover:bg-slate-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <button id="how-to-ask-btn" class="flex items-center text-slate-400 hover:text-slate-200 transition-colors bg-slate-800 px-4 py-2 rounded-lg border border-slate-600 hover:border-slate-500">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
+                        如何提问
+                    </button>
+                    <button id="api-config-btn" class="flex items-center text-slate-400 hover:text-slate-200 transition-colors bg-slate-800 px-4 py-2 rounded-lg border border-slate-600 hover:border-slate-500">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        API配置
                     </button>
                 </div>
                 <!-- Chat Messages -->
@@ -180,50 +188,89 @@
             </main>
         </div>
         <!-- "How to Ask" Modal -->
-        <div id="how-to-ask-modal" class="modal-backdrop hidden items-center justify-center p-4">
-            <div class="modal-content-dark max-w-2xl w-full modal-scrollable">
-                <div class="p-6 md:p-8">
-                    <div class="flex justify-between items-start mb-6">
-                        <h3 class="text-xl md:text-2xl font-bold text-slate-100">如何有效提问？</h3>
-                        <button id="close-how-to-ask-modal" class="text-slate-400 hover:text-slate-200 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
+        <div id="how-to-ask-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+                    <div class="bg-slate-700 border-b border-slate-600 p-6">
+                        <h3 class="text-xl font-semibold text-slate-100">如何向AI导师提出高质量问题</h3>
                     </div>
-                    <div class="prose prose-sm sm:prose-base max-w-none text-slate-300 space-y-4">
-                        <p>为了从AI导师那里获得最有价值的洞见，请尝试遵循以下提问原则：</p>
-                        <ul class="list-disc space-y-3 pl-5">
-                            <li>
-                                <strong>明确具体</strong>
-                                ：避免过于宽泛的问题。例如，不要问“我该如何创业？”，而是问“针对我的SaaS产品初期用户增长，有哪些低成本获客策略建议？”
-                            </li>
-                            <li>
-                                <strong>提供背景</strong>
-                                ：简要说明您的情况、行业、公司阶段、已尝试的方法以及遇到的具体困境。背景信息越充分，AI导师的回答越有针对性。
-                            </li>
-                            <li>
-                                <strong>设定目标</strong>
-                                ：清晰表达您希望从回答中获得什么，例如决策建议、策略方向、验证想法等。
-                            </li>
-                            <li>
-                                <strong>一次一问</strong>
-                                ：如果问题复杂，可以拆解成几个小问题分步提问。这样更容易获得聚焦、深入的回答。
-                            </li>
-                            <li>
-                                <strong>深入追问</strong>
-                                ：基于AI导师的回答，可以提出更深入的问题，进行迭代式对话，挖掘更深层次的洞见。
-                            </li>
-                            <li>
-                                <strong>利用框架</strong>
-                                ：可以参考“提问引导手册”中的问题框架，它们能帮您结构化思考并提出高质量问题。
-                            </li>
-                        </ul>
-                        <p>高质量的提问是开启智慧对话的钥匙。祝您与AI导师交流愉快，收获满满！</p>
+                    <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 140px);">
+                        <div class="prose prose-slate max-w-none">
+                            <p class="text-slate-300 leading-relaxed mb-4">
+                                与AI导师对话时，提问的质量直接影响回答的价值。以下是一些提高问题质量的建议：
+                            </p>
+                            <ul class="space-y-4 text-slate-300">
+                                <li>
+                                    <strong>明确具体</strong>
+                                    ：避免过于宽泛的问题。例如，不要问"我该如何创业？"，而是问"针对我的SaaS产品初期用户增长，有哪些低成本获客策略建议？"
+                                </li>
+                                <li>
+                                    <strong>提供背景</strong>
+                                    ：简要说明您的现状、目标和面临的挑战，这有助于导师给出更针对性的建议。
+                                </li>
+                                <li>
+                                    <strong>分阶段询问</strong>
+                                    ：复杂问题可以分解成几个子问题，逐步深入探讨。
+                                </li>
+                                <li>
+                                    <strong>善用场景</strong>
+                                    ：描述具体的业务场景或案例，让导师更好地理解您的处境。
+                                </li>
+                                <li>
+                                    <strong>利用框架</strong>
+                                    ：可以参考"提问引导手册"中的问题框架，它们能帮您结构化思考并提出高质量问题。
+                                </li>
+                            </ul>
+                            <p>高质量的提问是开启智慧对话的钥匙。祝您与AI导师交流愉快，收获满满！</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 border-t border-slate-700 p-6 sticky bottom-0">
+                        <button id="got-it-how-to-ask-modal" class="w-full btn-primary shadow-glow-sky">明白了</button>
                     </div>
                 </div>
-                <div class="bg-slate-800/50 border-t border-slate-700 p-6 sticky bottom-0">
-                    <button id="got-it-how-to-ask-modal" class="w-full btn-primary shadow-glow-sky">明白了</button>
+            </div>
+        </div>
+
+        <!-- API Configuration Modal -->
+        <div id="api-config-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-slate-800 rounded-lg shadow-xl max-w-lg w-full">
+                    <div class="bg-slate-700 border-b border-slate-600 p-6">
+                        <h3 class="text-xl font-semibold text-slate-100">API 配置</h3>
+                        <p class="text-slate-400 text-sm mt-2">配置您的AI服务API密钥</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">当前状态</label>
+                                <div id="api-status" class="px-3 py-2 bg-slate-700 rounded-lg border border-slate-600">
+                                    <span class="text-slate-400">检查中...</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="api-key-input" class="block text-sm font-medium text-slate-300 mb-2">
+                                    API 密钥
+                                </label>
+                                <input type="password" id="api-key-input" 
+                                       class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                       placeholder="输入您的API密钥">
+                            </div>
+                            
+                            <div class="text-xs text-slate-400 space-y-1">
+                                <p>• 当前使用 SiliconFlow API (免费额度)</p>
+                                <p>• 密钥仅存储在您的浏览器本地</p>
+                                <p>• 获取密钥：<a href="https://cloud.siliconflow.cn" target="_blank" class="text-sky-400 hover:text-sky-300">cloud.siliconflow.cn</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 border-t border-slate-700 p-6">
+                        <div class="flex space-x-3">
+                            <button id="save-api-key" class="flex-1 btn-primary shadow-glow-sky">保存</button>
+                            <button id="test-api-key" class="flex-1 bg-slate-600 hover:bg-slate-500 text-white font-medium py-2 px-4 rounded-lg transition-colors">测试</button>
+                            <button id="close-api-config" class="px-4 py-2 text-slate-400 hover:text-slate-200 transition-colors">取消</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
