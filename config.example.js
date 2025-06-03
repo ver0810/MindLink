@@ -1,30 +1,21 @@
-// FounderMind 简化配置文件
+// FounderMind 配置示例文件
 // 
-// 🔑 GitHub Pages 部署说明：
-// 要在GitHub Pages上使用AI功能，请将下面的API_KEY替换为您的实际API密钥
-// 
-// 获取SiliconFlow API密钥的步骤：
-// 1. 访问 https://cloud.siliconflow.cn
-// 2. 注册账户并登录
-// 3. 在控制台中创建API密钥
-// 4. 将API_KEY的值替换为 'sk-xxxxxxxxxxxxxxxxxx'
-//
-// ⚠️ 注意：如果要开源到GitHub，请不要将真实的API key提交到仓库中！
-// 建议创建一个私有的fork或使用环境变量。
+// 🔑 GitHub Pages 部署配置示例
+// 复制这个文件到 js/config.js 并修改API_KEY
 
 const CONFIG = {
     // API 配置
     API: {
-        // URL: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
-        // MODEL: 'deepseek-v3-250324',
         URL: 'https://api.siliconflow.cn/v1/chat/completions',
         MODEL: 'Pro/deepseek-ai/DeepSeek-V3',
-        // 写死的API KEY用于GitHub Pages部署
-        // 🔥 请将下面的值替换为您的实际SiliconFlow API密钥
-        API_KEY: 'sk-tadwvjacxxdddynmbevczahgiruvpximvvgblwrxeutqqity', // 请替换为您的实际API密钥
+        
+        // 🔥 将下面的API密钥替换为您的实际密钥
+        // 获取方式：https://cloud.siliconflow.cn
+        API_KEY: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        
         MAX_TOKENS: 1000,
         TEMPERATURE: 0.7,
-        TIMEOUT: 30000 // 30秒超时
+        TIMEOUT: 30000
     },
     
     // 环境检测
@@ -189,4 +180,4 @@ const Utils = {
 };
 
 // 向后兼容的别名
-const SettingsManager = ApiManager;
+const SettingsManager = ApiManager; 

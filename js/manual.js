@@ -127,30 +127,58 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    let selectedMentorForQuestion = null;
+
     function openQuestionModal(question) {
         document.getElementById('modal-question-title').textContent = question.title;
         document.getElementById('modal-question-description').textContent = question.description;
         document.getElementById('modal-question-template').textContent = question.template;
         document.getElementById('modal-question-why').textContent = question.why;
 
-        const mentorsContainer = document.getElementById('modal-recommended-mentors');
-        mentorsContainer.innerHTML = '';
-        const recommendedMentorsList = mentors.filter(mentor => question.recommendedMentors.includes(mentor.id));
-        
-        if (recommendedMentorsList.length > 0) {
-            recommendedMentorsList.forEach(mentor => {
-                const mentorTag = document.createElement('span');
-                mentorTag.className = 'inline-flex items-center bg-slate-700 text-sky-300 text-sm px-3 py-1.5 rounded-full shadow';
-                mentorTag.innerHTML = `
-                    <img src="${mentor.avatar}" alt="${mentor.name}" class="w-5 h-5 rounded-full mr-2 object-cover border border-slate-500">
-                    ${mentor.name}
-                `;
-                mentorsContainer.appendChild(mentorTag);
-            });
-        } else {
-            mentorsContainer.innerHTML = '<p class="text-slate-400 text-sm">暂无特定导师推荐，此问题适用于多数导师。</p>';
-        }
+        // Reset selected mentor
+        selectedMentorForQuestion = null;
+        updateUseQuestionButton();
 
+        // Show all mentors for selection
+        const allMentorsContainer = document.getElementById('modal-all-mentors');
+        allMentorsContainer.innerHTML = '';
+        mentors.forEach(mentor => {
+            const mentorCard = document.createElement('div');
+            mentorCard.className = 'mentor-card group relative overflow-hidden bg-gradient-to-br from-slate-800/60 to-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-5 cursor-pointer transition-all duration-300 ease-out hover:shadow-2xl hover:shadow-sky-500/10 hover:border-sky-500/30 hover:-translate-y-1';
+            mentorCard.setAttribute('data-mentor-id', mentor.id);
+            
+            const isRecommended = question.recommendedMentors.includes(mentor.id);
+            mentorCard.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="relative">
+                        <div class="w-14 h-14 rounded-2xl overflow-hidden border-2 border-slate-600/50 group-hover:border-sky-400/50 transition-colors duration-300">
+                            <img src="${mentor.avatar}" alt="${mentor.name}" class="w-full h-full object-cover">
+                        </div>
+                        ${isRecommended ? '<div class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center"><span class="text-xs text-white font-bold">★</span></div>' : ''}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between mb-2">
+                            <h5 class="font-bold text-slate-100 text-base leading-tight">${mentor.name}</h5>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-3 leading-relaxed">${mentor.title}</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${mentor.expertise.slice(0, 3).map(skill => 
+                                `<span class="inline-block text-xs bg-gradient-to-r from-sky-500/20 to-purple-500/20 text-sky-300 px-2 py-1 rounded-lg border border-sky-500/20 backdrop-blur-sm">${skill}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-sky-500/0 via-sky-500/0 to-sky-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+            `;
+            
+            mentorCard.addEventListener('click', () => selectMentor(mentor, mentorCard));
+            allMentorsContainer.appendChild(mentorCard);
+        });
 
         if (useQuestionBtn) {
             useQuestionBtn.setAttribute('data-question-template', question.template);
@@ -159,22 +187,73 @@ document.addEventListener('DOMContentLoaded', function() {
         // Scroll modal to top
         const modalContent = questionModal.querySelector('.modal-scrollable > div:first-child');
         if (modalContent) modalContent.scrollTop = 0;
+    }
 
+    function selectMentor(mentor, mentorCard) {
+        // Remove previous selection
+        document.querySelectorAll('.mentor-card').forEach(card => {
+            card.classList.remove('ring-2', 'ring-sky-400', 'bg-gradient-to-br');
+            card.classList.add('border-slate-700/50');
+            // Remove selected indicator
+            const indicator = card.querySelector('.selected-indicator');
+            if (indicator) indicator.remove();
+        });
+        
+        // Add selection to current card
+        mentorCard.classList.remove('border-slate-700/50');
+        mentorCard.classList.add('ring-2', 'ring-sky-400', 'bg-gradient-to-br', 'from-sky-500/10', 'to-purple-500/5');
+        
+        // Add selected indicator
+        const indicator = document.createElement('div');
+        indicator.className = 'selected-indicator absolute top-3 right-3 w-6 h-6 bg-gradient-to-r from-sky-400 to-sky-500 rounded-full flex items-center justify-center shadow-lg';
+        indicator.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+        mentorCard.appendChild(indicator);
+        
+        selectedMentorForQuestion = mentor;
+        updateUseQuestionButton();
+    }
+
+    function updateUseQuestionButton() {
+        const useBtn = document.getElementById('use-question');
+        const infoContainer = document.getElementById('selected-mentor-info');
+        
+        if (selectedMentorForQuestion) {
+            useBtn.disabled = false;
+            infoContainer.innerHTML = `
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-emerald-400 font-medium">已选择：${selectedMentorForQuestion.name}</span>
+            `;
+            infoContainer.classList.remove('text-slate-400');
+            infoContainer.classList.add('text-emerald-400');
+        } else {
+            useBtn.disabled = true;
+            infoContainer.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span>请先选择一位导师</span>
+            `;
+            infoContainer.classList.remove('text-emerald-400');
+            infoContainer.classList.add('text-slate-400');
+        }
     }
 
     if (useQuestionBtn) {
         useQuestionBtn.addEventListener('click', function() {
+            if (!selectedMentorForQuestion) {
+                alert("请先选择一位导师！");
+                return;
+            }
+            
             const questionTemplate = this.getAttribute('data-question-template');
             sessionStorage.setItem('selectedQuestion', questionTemplate);
-            const selectedMentorId = sessionStorage.getItem('selectedMentor');
-            if (selectedMentorId) {
-                window.location.href = `conversation.html`;
-            } else {
-                // If no mentor selected, redirect to dashboard. User can pick a mentor there.
-                // Optionally, could store the question and redirect to convo page after mentor selection.
-                alert("请先在“智慧导师”页面选择一位导师。");
-                window.location.href = 'dashboard.html';
-            }
+            sessionStorage.setItem('selectedMentor', selectedMentorForQuestion.id);
+            
+            // Close modal and redirect to conversation
+            questionModal.classList.replace('flex','hidden');
+            window.location.href = `conversation.html`;
         });
     }
 

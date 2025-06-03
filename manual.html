@@ -143,39 +143,75 @@
 
     <!-- Question Detail Modal -->
     <div id="question-modal" class="modal-backdrop hidden items-center justify-center p-4">
-        <div class="modal-content-dark max-w-2xl w-full modal-scrollable">
+        <div class="modal-content-dark max-w-5xl w-full modal-scrollable">
            <div class="p-6 md:p-8">
-                <div class="flex justify-between items-start mb-6">
-                    <h3 id="modal-question-title" class="text-xl md:text-2xl font-bold text-slate-100 leading-tight"></h3>
-                    <button id="close-question-modal" class="text-slate-400 hover:text-slate-200 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                <div class="flex justify-between items-start mb-8">
+                    <div class="flex-1 pr-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-2 h-8 bg-gradient-to-b from-sky-400 via-purple-500 to-pink-500 rounded-full"></div>
+                            <h3 id="modal-question-title" class="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-100 via-sky-200 to-purple-200 bg-clip-text text-transparent leading-tight"></h3>
+                        </div>
+                        <div class="bg-gradient-to-r from-slate-800/60 to-transparent p-4 rounded-xl border-l-2 border-sky-400/50">
+                            <p id="modal-question-description" class="text-slate-300 leading-relaxed"></p>
+                        </div>
+                    </div>
+                    <button id="close-question-modal" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-slate-700/50 hover:bg-slate-600/50 text-slate-400 hover:text-slate-200 transition-all duration-200 hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
 
-                <div class="prose prose-sm sm:prose-base max-w-none mb-6">
-                    <p id="modal-question-description" class="text-slate-300"></p>
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-6 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-full"></div>
+                        <h4 class="text-lg font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">问题框架建议</h4>
+                    </div>
+                    <div id="modal-question-template" class="relative bg-gradient-to-br from-slate-800/80 to-slate-700/60 backdrop-blur-md p-6 rounded-2xl text-slate-200 whitespace-pre-wrap border border-slate-600/50 text-sm leading-relaxed shadow-xl">
+                        <div class="absolute top-4 right-4 opacity-30">
+                            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-6">
-                    <h4 class="text-lg font-semibold text-sky-400 mb-2">问题框架建议</h4>
-                    <div id="modal-question-template" class="bg-slate-700/50 p-4 rounded-lg text-slate-200 whitespace-pre-wrap border border-slate-600 text-sm"></div>
-                </div>
-
-                <div class="mb-6">
-                    <h4 class="text-lg font-semibold text-sky-400 mb-2">为什么这是个好问题？</h4>
-                    <p id="modal-question-why" class="text-slate-300 text-sm"></p>
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-6 bg-gradient-to-b from-purple-400 to-pink-500 rounded-full"></div>
+                        <h4 class="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">为什么这是个好问题？</h4>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-md p-5 rounded-2xl border border-purple-500/20">
+                        <p id="modal-question-why" class="text-slate-300 text-sm leading-relaxed"></p>
+                    </div>
                 </div>
 
                 <div>
-                    <h4 class="text-lg font-semibold text-sky-400 mb-3">建议咨询的 AI 导师</h4>
-                    <div id="modal-recommended-mentors" class="flex flex-wrap gap-3">
-                        <!-- Recommended mentors will be inserted here -->
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-6 bg-gradient-to-b from-sky-400 to-purple-500 rounded-full"></div>
+                        <h4 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-purple-400 bg-clip-text text-transparent">选择您的AI导师</h4>
+                    </div>
+                    <p class="text-slate-400 text-sm mb-6">选择最适合解答您问题的导师，每位导师都有独特的专业领域和经验背景</p>
+                    <div id="modal-all-mentors" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto pr-2">
+                        <!-- All mentors will be inserted here as selectable cards -->
                     </div>
                 </div>
             </div>
-            <div class="bg-slate-800/50 border-t border-slate-700 p-6 sticky bottom-0">
-                <button id="use-question" class="w-full btn-primary shadow-glow-sky">
-                    用此问题框架提问
+            <div class="bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-xl border-t border-slate-700/50 p-6 sticky bottom-0">
+                <div class="flex items-center justify-center mb-3">
+                    <div id="selected-mentor-info" class="flex items-center gap-2 text-sm text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <span>请先选择一位导师</span>
+                    </div>
+                </div>
+                <button id="use-question" class="group relative w-full overflow-hidden bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:shadow-2xl hover:shadow-sky-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-none" disabled>
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
+                    <div class="relative flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <span>用此问题框架提问</span>
+                    </div>
                 </button>
             </div>
         </div>
