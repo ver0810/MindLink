@@ -1,47 +1,5 @@
 // FounderMind Platform - 简化的对话系统
-// Debug模式 - 帮助诊断GitHub Pages问题
-window.foundermindDebug = {
-    log: (message, data = null) => {
-        const timestamp = new Date().toLocaleTimeString();
-        console.log(`[FounderMind ${timestamp}] ${message}`, data || '');
-        
-        // 在页面上显示调试信息
-        if (window.location.hostname.includes('github.io')) {
-            const debugElement = document.getElementById('debug-info') || createDebugElement();
-            debugElement.innerHTML += `<div style="font-size: 11px; color: #64748b; margin: 2px 0;">[${timestamp}] ${message}</div>`;
-        }
-    },
-    error: (message, error = null) => {
-        console.error(`[FounderMind Error] ${message}`, error || '');
-        window.foundermindDebug.log(`❌ ERROR: ${message}`, error);
-    }
-};
-
-function createDebugElement() {
-    const debugDiv = document.createElement('div');
-    debugDiv.id = 'debug-info';
-    debugDiv.style.cssText = `
-        position: fixed; 
-        top: 10px; 
-        right: 10px; 
-        width: 300px; 
-        height: 200px; 
-        background: rgba(0,0,0,0.8); 
-        color: white; 
-        font-size: 11px; 
-        padding: 10px; 
-        border-radius: 5px; 
-        overflow-y: auto; 
-        z-index: 10000;
-        font-family: monospace;
-    `;
-    document.body.appendChild(debugDiv);
-    return debugDiv;
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    window.foundermindDebug.log('🚀 页面加载完成');
-    
     // 初始化移动端菜单
     initMobileMenu();
     
@@ -171,39 +129,25 @@ function initConversationSystem() {
     const apiKeyInput = document.getElementById('api-key-input');
     const apiStatus = document.getElementById('api-status');
 
-    window.foundermindDebug.log('🔍 API配置元素检查', {
-        apiConfigBtn: !!apiConfigBtn,
-        apiConfigModal: !!apiConfigModal,
-        closeApiConfigBtn: !!closeApiConfigBtn,
-        saveApiKeyBtn: !!saveApiKeyBtn,
-        testApiKeyBtn: !!testApiKeyBtn
-    });
-
     if (apiConfigBtn && apiConfigModal) {
-        window.foundermindDebug.log('✅ API配置按钮和模态框找到，绑定事件监听器');
-        
         apiConfigBtn.addEventListener('click', () => {
-            window.foundermindDebug.log('🔧 API配置按钮被点击');
             openApiConfigModal();
         });
 
         if (closeApiConfigBtn) {
             closeApiConfigBtn.addEventListener('click', () => {
-                window.foundermindDebug.log('❌ 关闭API配置模态框');
                 apiConfigModal.classList.add('hidden');
             });
         }
 
         if (saveApiKeyBtn) {
             saveApiKeyBtn.addEventListener('click', () => {
-                window.foundermindDebug.log('💾 保存API密钥按钮被点击');
                 saveApiKey();
             });
         }
 
         if (testApiKeyBtn) {
             testApiKeyBtn.addEventListener('click', () => {
-                window.foundermindDebug.log('🧪 测试API连接按钮被点击');
                 testApiConnection();
             });
         }
@@ -211,14 +155,8 @@ function initConversationSystem() {
         // 点击遮罩关闭
         apiConfigModal.addEventListener('click', (e) => {
             if (e.target === apiConfigModal) {
-                window.foundermindDebug.log('🖱️ 点击遮罩关闭API配置');
                 apiConfigModal.classList.add('hidden');
             }
-        });
-    } else {
-        window.foundermindDebug.error('❌ API配置元素未找到', {
-            apiConfigBtn: !!apiConfigBtn,
-            apiConfigModal: !!apiConfigModal
         });
     }
 
@@ -556,16 +494,8 @@ function populateSuggestedQuestions(primaryMentor) {
 
 // API Configuration Functions
 function openApiConfigModal() {
-    window.foundermindDebug.log('🔓 打开API配置模态框');
-    
     const apiConfigModal = document.getElementById('api-config-modal');
     const apiKeyInput = document.getElementById('api-key-input');
-    
-    window.foundermindDebug.log('🔍 模态框元素检查', {
-        apiConfigModal: !!apiConfigModal,
-        apiKeyInput: !!apiKeyInput,
-        modalHidden: apiConfigModal ? apiConfigModal.classList.contains('hidden') : 'null'
-    });
     
     if (apiConfigModal && apiKeyInput) {
         // 显示当前API密钥（掩码形式）
@@ -577,9 +507,6 @@ function openApiConfigModal() {
         
         // 显示模态框
         apiConfigModal.classList.remove('hidden');
-        window.foundermindDebug.log('✅ 模态框已显示');
-    } else {
-        window.foundermindDebug.error('❌ 模态框或输入框未找到');
     }
 }
 

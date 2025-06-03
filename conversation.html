@@ -20,10 +20,10 @@
             }
         </script>
         <link rel="stylesheet" href="css/styles.css">
-        <script src="assets/mentors.js?v=1.1" defer></script>
-        <script src="js/config.js?v=1.1" defer></script>
-        <script src="js/ui-components.js?v=1.1" defer></script>
-        <script src="js/conversation.js?v=1.1" defer></script>
+        <script src="assets/mentors.js?v=1.2" defer></script>
+        <script src="js/config.js?v=1.2" defer></script>
+        <script src="js/ui-components.js?v=1.2" defer></script>
+        <script src="js/conversation.js?v=1.2" defer></script>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
     </head>
     <body class="bg-slate-900 text-slate-200 min-h-screen">
@@ -167,10 +167,7 @@
                             </svg>
                             API配置
                         </button>
-                        <!-- 临时调试按钮 -->
-                        <button id="debug-test-btn" onclick="testApiConfigFunction()" class="flex items-center text-green-400 hover:text-green-200 transition-colors bg-green-800 px-2 py-1 rounded text-xs" style="display: none;">
-                            测试
-                        </button>
+
                     </div>
                 </div>
                 <!-- Chat Messages -->
@@ -300,47 +297,6 @@
             }
             , true);
         </script>
-        
-        <!-- 临时调试脚本 -->
-        <script>
-            // 显示调试按钮在GitHub Pages环境
-            if (window.location.hostname.includes('github.io')) {
-                document.addEventListener('DOMContentLoaded', () => {
-                    const debugBtn = document.getElementById('debug-test-btn');
-                    if (debugBtn) debugBtn.style.display = 'flex';
-                });
-            }
-            
-            // 全局测试函数
-            window.testApiConfigFunction = function() {
-                console.log('🧪 手动测试API配置功能');
-                const modal = document.getElementById('api-config-modal');
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    console.log('✅ 手动显示模态框成功');
-                } else {
-                    console.error('❌ 找不到API配置模态框');
-                }
-            };
-            
-            // 添加全局点击监听器用于调试
-            if (window.location.hostname.includes('github.io')) {
-                document.addEventListener('click', function(e) {
-                    if (e.target.id === 'api-config-btn') {
-                        console.log('🔧 检测到API配置按钮点击（全局监听器）');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        // 手动触发模态框显示
-                        const modal = document.getElementById('api-config-modal');
-                        if (modal) {
-                            modal.classList.remove('hidden');
-                            console.log('✅ 全局监听器显示模态框');
-                        }
-                        return false;
-                    }
-                }, true);
-            }
-        </script>
+
     </body>
 </html>
