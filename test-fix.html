@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复测试 - FounderMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="assets/mentors.js" defer></script>
+    <script src="js/config.js" defer></script>
+    <script src="js/ui-components.js" defer></script>
+</head>
+<body class="bg-slate-900 text-slate-200 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">🔧 简化修复测试</h1>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- 配置测试 -->
+            <div class="cool-card p-6">
+                <h2 class="text-xl font-semibold mb-4">配置系统测试</h2>
+                <div id="config-test-results" class="space-y-2 text-sm">
+                    <div>检测中...</div>
+                </div>
+                <button onclick="testConfig()" class="btn-primary mt-4">
+                    重新测试配置
+                </button>
+            </div>
+            
+            <!-- UI 组件测试 -->
+            <div class="cool-card p-6">
+                <h2 class="text-xl font-semibold mb-4">UI 组件测试</h2>
+                <div id="ui-test-area" class="space-y-4">
+                    <div>测试中...</div>
+                </div>
+                <button onclick="testUIComponents()" class="btn-primary mt-4">
+                    重新测试组件
+                </button>
+            </div>
+        </div>
+        
+        <!-- 通知和流式输出测试 -->
+        <div class="cool-card p-6 mt-8">
+            <h2 class="text-xl font-semibold mb-4">通知和流式输出测试</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-medium mb-3">通知系统</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="UIComponents.showNotification('信息通知', 'info')" class="btn-secondary text-sm">
+                            信息
+                        </button>
+                        <button onclick="UIComponents.showNotification('成功通知', 'success')" class="btn-secondary text-sm">
+                            成功
+                        </button>
+                        <button onclick="UIComponents.showNotification('警告通知', 'warning')" class="btn-secondary text-sm">
+                            警告
+                        </button>
+                        <button onclick="UIComponents.showNotification('错误通知', 'error')" class="btn-secondary text-sm">
+                            错误
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-3">流式输出测试</h3>
+                    <div id="streaming-test-area" class="bg-slate-800 rounded-lg p-4 min-h-[120px] max-h-[200px] overflow-y-auto custom-scrollbar">
+                        <!-- 流式测试内容 -->
+                    </div>
+                    <button onclick="testStreamingOutput()" class="btn-primary text-sm mt-2">
+                        测试流式输出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            testConfig();
+            testUIComponents();
+        });
+
+        function testConfig() {
+            const results = document.getElementById('config-test-results');
+            const tests = [];
+            
+            // 测试 CONFIG 对象
+            try {
+                tests.push(`✅ CONFIG 对象存在: ${!!CONFIG}`);
+                tests.push(`✅ API 配置: ${CONFIG.API?.URL ? '正常' : '缺失'}`);
+                tests.push(`✅ 对话配置: ${CONFIG.CONVERSATION?.SYSTEM_PROMPTS ? '正常' : '缺失'}`);
+                tests.push(`✅ UI 配置: ${CONFIG.UI?.MAX_MENTORS_DISPLAY ? '正常' : '缺失'}`);
+                
+                // 测试 ApiManager
+                tests.push(`✅ ApiManager 对象: ${typeof ApiManager === 'object' ? '正常' : '缺失'}`);
+                
+                // 测试 Utils
+                tests.push(`✅ Utils 对象: ${typeof Utils === 'object' ? '正常' : '缺失'}`);
+                tests.push(`✅ formatTemplate 函数: ${typeof Utils.formatTemplate === 'function' ? '正常' : '缺失'}`);
+                
+            } catch (error) {
+                tests.push(`❌ 配置测试错误: ${error.message}`);
+            }
+            
+            results.innerHTML = tests.map(test => `<div>${test}</div>`).join('');
+        }
+
+        function testUIComponents() {
+            const area = document.getElementById('ui-test-area');
+            area.innerHTML = '';
+            
+            try {
+                // 测试导师头像组件
+                if (typeof mentors !== 'undefined' && mentors.length > 0) {
+                    const mentor = mentors[0];
+                    const avatar = UIComponents.createMentorAvatar(mentor, 'small');
+                    
+                    const testDiv = document.createElement('div');
+                    testDiv.className = 'flex items-center space-x-2';
+                    testDiv.appendChild(avatar);
+                    testDiv.appendChild(document.createTextNode('✅ 导师头像组件正常'));
+                    area.appendChild(testDiv);
+                    
+                    // 测试建议问题按钮
+                    const questionBtn = UIComponents.createSuggestedQuestion('测试问题', () => {
+                        UIComponents.showNotification('问题按钮正常工作！', 'success');
+                    });
+                    area.appendChild(questionBtn);
+                    
+                    // 测试加载动画
+                    const loader = UIComponents.createLoadingSpinner('测试加载...');
+                    area.appendChild(loader);
+                } else {
+                    area.innerHTML = '<div>❌ 导师数据未加载</div>';
+                }
+                
+            } catch (error) {
+                area.innerHTML = `<div>❌ UI 组件测试错误: ${error.message}</div>`;
+            }
+        }
+
+        async function testStreamingOutput() {
+            const area = document.getElementById('streaming-test-area');
+            area.innerHTML = '';
+            
+            if (typeof mentors !== 'undefined' && mentors.length > 0) {
+                const mentor = mentors[0];
+                const testMessage = "这是一个流式输出测试。您应该看到这段文字像打字机一样逐字出现，而不是一次性显示所有内容。这个效果模拟了真实的AI对话体验。";
+                
+                const streamingElement = UIComponents.createStreamingMessage(mentor);
+                area.appendChild(streamingElement);
+                
+                // 开始流式输出
+                await UIComponents.streamText(streamingElement, testMessage, 50);
+                UIComponents.showNotification('流式输出测试完成！', 'success');
+            } else {
+                area.innerHTML = '<div class="text-red-400">❌ 导师数据未加载，无法测试流式输出</div>';
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,23 +1,22 @@
-/* Animation for typing indicator */
+/* === 动画效果 === */
 @keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
-.animate-bounce {
-  animation: bounce 1s infinite;
-}
-
-/* Animation for chat messages appearing */
 @keyframes fade-in-up {
     0% { opacity: 0; transform: translateY(10px); }
     100% { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 动画类 */
+.animate-bounce { animation: bounce 1s infinite; }
 .animate-fade-in-up { animation: fade-in-up 0.3s ease-out forwards; }
+.animate-spin { animation: spin 1s linear infinite; }
 
 
 /* Hide scrollbar while maintaining functionality - Dark Theme Update */
@@ -249,11 +248,50 @@ input[type="text"].dark-input {
 }
 
 .chat-bubble-user {
-    @apply bg-sky-500 text-white;
+    @apply bg-gradient-to-br from-sky-500 to-sky-600 text-white shadow-md;
 }
 
 .chat-bubble-mentor {
-    @apply bg-slate-700 text-slate-100;
+    @apply bg-slate-700/90 backdrop-blur-sm text-slate-100 border border-slate-600/50;
+}
+
+/* 流式输出相关样式 */
+.streaming-cursor {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* 聊天容器优化 */
+#chat-messages {
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 确保消息从顶部开始显示 */
+.chat-messages-container {
+    padding-bottom: 1rem;
+}
+
+/* 响应式聊天气泡 */
+@media (max-width: 640px) {
+    .chat-bubble-user, .chat-bubble-mentor {
+        max-width: 90% !important;
+    }
+}
+
+/* 优化打字指示器 */
+.typing-indicator {
+    animation: fade-in-up 0.3s ease-out;
+}
+
+/* 聊天消息间距优化 */
+.chat-messages-container > div:last-child {
+    margin-bottom: 2rem;
 }
 
 /* Ensure Tailwind applies styles - this is useful if Tailwind JIT is missing something initially */

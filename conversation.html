@@ -21,7 +21,8 @@
         </script>
         <link rel="stylesheet" href="css/styles.css">
         <script src="assets/mentors.js" defer></script>
-        <!-- Removed assets/questions.js as it's for manual.html -->
+        <script src="js/config.js" defer></script>
+        <script src="js/ui-components.js" defer></script>
         <script src="js/conversation.js" defer></script>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
     </head>
@@ -159,7 +160,7 @@
                     </button>
                 </div>
                 <!-- Chat Messages -->
-                <div id="chat-messages" class="flex-grow p-4 md:p-6 space-y-6 overflow-y-auto custom-scrollbar">
+                <div id="chat-messages" class="flex-grow p-4 md:p-6 overflow-y-auto custom-scrollbar chat-messages-container">
                 <!-- Messages will be appended here -->
                 </div>
                 <!-- Message Input Area -->
@@ -236,7 +237,6 @@
             </svg>
         </a>
         <script async>
-
             document.addEventListener('error', (e) => {
                 if (e.target.tagName === 'IMG') {
                     e.target.onerror = null;
