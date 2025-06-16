@@ -20,8 +20,9 @@
             }
         }
     </script>
-    <script src="js/auth.js" defer></script>
-    <link rel="stylesheet" href="css/styles.css">
+    <script src="../js/core/auth.js" defer></script>
+    <script src="../js/core/form-validation.js" defer></script>
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
 </head>
 <body class="bg-gradient-to-br from-slate-900 to-slate-850 text-slate-200 min-h-screen">
@@ -138,17 +139,17 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8">
                     <!-- Mentor previews will be dynamically inserted by JS or hardcoded for landing page -->
                     <div class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover">
-                        <img src="pic/buffett.jpg" alt="Warren Buffett" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
+                        <img src="../assets/images/mentors/buffett.jpg" alt="Warren Buffett" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
                         <h4 class="font-semibold text-slate-100">沃伦·巴菲特</h4>
                         <p class="text-xs text-slate-400 text-center">价值投资泰斗</p>
                     </div>
                     <div class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover">
-                        <img src="pic/mayun.jpg" alt="Jack Ma" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
+                        <img src="../assets/images/mentors/mayun.jpg" alt="Jack Ma" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
                         <h4 class="font-semibold text-slate-100">马云</h4>
                         <p class="text-xs text-slate-400 text-center">电商先驱</p>
                     </div>
                     <div class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover">
-                        <img src="pic/Sam Altman.jpg" alt="Sam Altman" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
+                        <img src="../assets/images/mentors/sam-altman.jpg" alt="Sam Altman" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
                         <h4 class="font-semibold text-slate-100">Sam Altman</h4>
                         <p class="text-xs text-slate-400 text-center">AI创新领袖</p>
                     </div>
@@ -260,6 +261,16 @@
                     </button>
                 </div>
                 <form id="login-form">
+                    <!-- 错误提示区域 -->
+                    <div id="login-error-message" class="mb-4 hidden p-4 rounded-lg border-2">
+                        <div id="login-error-content" class="flex items-center">
+                            <svg id="login-error-icon" class="w-6 h-6 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span id="login-error-text" class="font-medium"></span>
+                        </div>
+                    </div>
+                    
                     <div class="mb-5">
                         <label for="email" class="block text-sm font-medium text-slate-300 mb-1">邮箱</label>
                         <input type="email" id="email" name="email" class="dark-input" required>
@@ -285,6 +296,16 @@
                     </button>
                 </div>
                 <form id="register-form">
+                    <!-- 错误提示区域 -->
+                    <div id="register-error-message" class="mb-4 hidden p-4 rounded-lg border-2">
+                        <div id="register-error-content" class="flex items-center">
+                            <svg id="register-error-icon" class="w-6 h-6 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span id="register-error-text" class="font-medium"></span>
+                        </div>
+                    </div>
+                    
                     <div class="mb-5">
                         <label for="name" class="block text-sm font-medium text-slate-300 mb-1">姓名</label>
                         <input type="text" id="name" name="name" class="dark-input" required>

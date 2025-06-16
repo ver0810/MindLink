@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录调试</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .debug { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .info { background: #e3f2fd; color: #1565c0; }
+        pre { white-space: pre-wrap; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <h1>🔍 登录调试页面</h1>
+    
+    <form id="login-form">
+        <div>
+            <label>用户名:</label>
+            <input type="text" id="username" value="testuser">
+        </div>
+        <div>
+            <label>密码:</label>
+            <input type="password" id="password" value="test123">
+        </div>
+        <button type="submit">登录测试</button>
+    </form>
+    
+    <div id="debug-info"></div>
+    
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const debugDiv = document.getElementById('debug-info');
+            debugDiv.innerHTML = '';
+            
+            function addDebugInfo(title, content, type = 'info') {
+                const div = document.createElement('div');
+                div.className = `debug ${type}`;
+                div.innerHTML = `<h3>${title}</h3><pre>${content}</pre>`;
+                debugDiv.appendChild(div);
+            }
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const requestData = { username, password };
+            
+            addDebugInfo('📤 发送的请求数据', JSON.stringify(requestData, null, 2));
+            
+            const url = 'http://localhost:3000/api/auth/login';
+            addDebugInfo('🌐 请求URL', url);
+            
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            };
+            
+            addDebugInfo('⚙️ 请求选项', JSON.stringify(options, null, 2));
+            
+            try {
+                addDebugInfo('🚀 开始发送请求...', new Date().toISOString());
+                
+                const response = await fetch(url, options);
+                
+                addDebugInfo('📥 响应状态', `
+状态码: ${response.status}
+状态文本: ${response.statusText}
+URL: ${response.url}
+类型: ${response.type}
+已重定向: ${response.redirected}
+OK: ${response.ok}
+                `.trim());
+                
+                // 获取响应头
+                const headers = {};
+                for (let [key, value] of response.headers.entries()) {
+                    headers[key] = value;
+                }
+                addDebugInfo('📋 响应头', JSON.stringify(headers, null, 2));
+                
+                // 获取响应体
+                const responseText = await response.text();
+                addDebugInfo('📄 原始响应体', responseText);
+                
+                let responseData;
+                try {
+                    responseData = JSON.parse(responseText);
+                    addDebugInfo('📊 解析后的响应数据', JSON.stringify(responseData, null, 2), 
+                        responseData.success ? 'success' : 'error');
+                } catch (parseError) {
+                    addDebugInfo('❌ JSON解析失败', parseError.message, 'error');
+                }
+                
+                if (!response.ok) {
+                    addDebugInfo('❌ HTTP错误详情', `
+状态码: ${response.status}
+状态文本: ${response.statusText}
+错误消息: ${responseData ? responseData.message : '无法解析错误消息'}
+                    `.trim(), 'error');
+                }
+                
+            } catch (error) {
+                addDebugInfo('💥 请求异常', `
+错误类型: ${error.name}
+错误消息: ${error.message}
+错误堆栈: ${error.stack}
+                `.trim(), 'error');
+                
+                // 检查网络连接
+                addDebugInfo('🔍 网络诊断', '检查以下问题:\n1. 服务器是否运行在 localhost:3000\n2. CORS设置是否正确\n3. 防火墙是否阻止连接', 'error');
+            }
+        });
+        
+        // 页面加载时进行连接测试
+        window.addEventListener('load', async function() {
+            const debugDiv = document.getElementById('debug-info');
+            
+            try {
+                const healthResponse = await fetch('http://localhost:3000/health');
+                const healthData = await healthResponse.json();
+                
+                const div = document.createElement('div');
+                div.className = 'debug success';
+                div.innerHTML = `<h3>✅ 服务器连接测试</h3><pre>服务器正常运行: ${healthData.message}</pre>`;
+                debugDiv.appendChild(div);
+                
+            } catch (error) {
+                const div = document.createElement('div');
+                div.className = 'debug error';
+                div.innerHTML = `<h3>❌ 服务器连接测试失败</h3><pre>错误: ${error.message}</pre>`;
+                debugDiv.appendChild(div);
+            }
+        });
+    </script>
+</body>
+</html> 

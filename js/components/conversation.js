@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initConversationSystem();
 });
 
-// 初始化移动端菜单
+// 初始化移动端菜单duo
 function initMobileMenu() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -208,9 +208,15 @@ function initializeChat(mentorsInfo, mode, primaryMentor) {
     const chatMessages = document.getElementById('chat-messages');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-message');
+    const attachmentBtn = document.getElementById('attachment-btn');
+    const fileUploadContainer = document.getElementById('file-upload-container');
 
     // 初始化对话历史
     initializeConversationHistory(mentorsInfo, mode);
+    
+    // 文件上传功能
+    let fileUploadArea = null;
+    let selectedFiles = [];
 
     let greeting = "";
     if (mode === '1v1') {
@@ -225,16 +231,83 @@ function initializeChat(mentorsInfo, mode, primaryMentor) {
         await addMentorMessageStreaming(chatMessages, primaryMentor, greeting);
     }, 500);
 
+    // 附件按钮功能
+    if (attachmentBtn) {
+        attachmentBtn.addEventListener('click', () => {
+            toggleFileUpload();
+        });
+    }
+
+    function toggleFileUpload() {
+        if (fileUploadContainer.classList.contains('hidden')) {
+            // 显示文件上传区域
+            if (!fileUploadArea) {
+                fileUploadArea = UIComponents.createFileUploadArea();
+                fileUploadContainer.appendChild(fileUploadArea);
+            }
+            fileUploadContainer.classList.remove('hidden');
+            attachmentBtn.classList.add('text-sky-400');
+        } else {
+            // 隐藏文件上传区域
+            fileUploadContainer.classList.add('hidden');
+            attachmentBtn.classList.remove('text-sky-400');
+        }
+    }
+
     async function sendMessage() {
         const messageText = messageInput.value.trim();
-        if (messageText === '') return;
+        const hasFiles = fileUploadArea && UIComponents.getSelectedFiles(fileUploadArea).length > 0;
+        
+        if (messageText === '' && !hasFiles) return;
 
-        addUserMessage(chatMessages, messageText);
+        // 获取选中的文件
+        if (hasFiles) {
+            selectedFiles = UIComponents.getSelectedFiles(fileUploadArea);
+        }
+
+        // 准备消息内容
+        let finalMessageText = messageText;
+        let attachmentsForDisplay = [];
+
+        if (selectedFiles.length > 0) {
+            // 处理文件内容
+            try {
+                const processedFiles = await FileManager.prepareFilesForAI(selectedFiles);
+                finalMessageText = FileManager.buildMessageWithFiles(messageText, processedFiles);
+                
+                // 准备显示用的附件信息
+                attachmentsForDisplay = selectedFiles.map(file => ({
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                }));
+            } catch (error) {
+                console.error('文件处理失败:', error);
+                UIComponents.showNotification('文件处理失败，仅发送文本消息', 'warning');
+            }
+        }
+
+        // 显示用户消息（带附件显示）
+        if (attachmentsForDisplay.length > 0) {
+            addUserMessageWithAttachments(chatMessages, messageText, attachmentsForDisplay);
+        } else {
+            addUserMessage(chatMessages, messageText);
+        }
+        
+        // 清空输入
         messageInput.value = '';
-        messageInput.style.height = 'auto'; // Reset height
+        messageInput.style.height = 'auto';
+        
+        // 清空文件
+        if (fileUploadArea) {
+            UIComponents.clearFiles(fileUploadArea);
+            fileUploadContainer.classList.add('hidden');
+            attachmentBtn.classList.remove('text-sky-400');
+        }
+        selectedFiles = [];
 
-        // 添加用户消息到对话历史
-        addToConversationHistory('user', messageText);
+        // 添加到对话历史（使用包含文件内容的完整消息）
+        addToConversationHistory('user', finalMessageText);
 
         simulateMentorTyping(chatMessages, primaryMentor);
 
@@ -433,6 +506,13 @@ async function generateMentorResponseFallback(mentorsInfo, userMessage, mode, pr
 
 function addUserMessage(container, text) {
     const messageElement = UIComponents.createChatBubble(text, true);
+    container.appendChild(messageElement);
+    // 用户发送消息后立即滚动到底部
+    setTimeout(() => Utils.scrollToBottom(container), 50);
+}
+
+function addUserMessageWithAttachments(container, text, attachments) {
+    const messageElement = UIComponents.createChatBubbleWithAttachments(text, true, null, attachments);
     container.appendChild(messageElement);
     // 用户发送消息后立即滚动到底部
     setTimeout(() => Utils.scrollToBottom(container), 50);

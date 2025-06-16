@@ -19,11 +19,12 @@
                 }
             }
         </script>
-        <link rel="stylesheet" href="css/styles.css">
-        <script src="assets/mentors.js?v=1.2" defer></script>
-        <script src="js/config.js?v=1.2" defer></script>
-        <script src="js/ui-components.js?v=1.2" defer></script>
-        <script src="js/conversation.js?v=1.2" defer></script>
+        <link rel="stylesheet" href="../css/styles.css">
+        <script src="../assets/data/mentors.js?v=1.2" defer></script>
+            <script src="../js/core/config.js?v=1.2" defer></script>
+    <script src="../js/components/ui-components.js?v=1.2" defer></script>
+    <script src="../js/utils/file-manager.js?v=1.2" defer></script>
+    <script src="../js/components/conversation.js?v=1.2" defer></script>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
     </head>
     <body class="bg-slate-900 text-slate-200 min-h-screen">
@@ -87,7 +88,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="index.html" class="group flex items-center px-4 py-3 rounded-lg sidebar-link-inactive">
+                            <a href="../index.html" class="group flex items-center px-4 py-3 rounded-lg sidebar-link-inactive">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                 </svg>
@@ -132,7 +133,7 @@
                             </svg>
                             我的对话
                         </a>
-                        <a href="index.html" class="group flex items-center px-3 py-2 rounded-md sidebar-link-inactive text-sm">
+                        <a href="../index.html" class="group flex items-center px-3 py-2 rounded-md sidebar-link-inactive text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                             </svg>
@@ -179,13 +180,30 @@
                     <div id="suggested-questions" class="flex flex-wrap gap-2 mb-3">
                     <!-- Suggested questions buttons will be appended here -->
                     </div>
+                    
+                    <!-- File Upload Area -->
+                    <div id="file-upload-container" class="hidden">
+                        <!-- File upload area will be inserted here -->
+                    </div>
+                    
                     <div class="flex items-end space-x-3">
-                        <textarea id="message-input" rows="1" class="dark-input flex-grow resize-none overflow-y-auto custom-scrollbar" placeholder="输入您的问题... (Shift+Enter 换行)"></textarea>
-                        <button id="send-message" class="btn-primary p-3 md:p-3.5 rounded-lg shadow-glow-sky">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                            </svg>
-                        </button>
+                        <div class="flex-grow">
+                            <textarea id="message-input" rows="1" class="dark-input w-full resize-none overflow-y-auto custom-scrollbar" placeholder="输入您的问题... (Shift+Enter 换行)"></textarea>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- Attachment Button -->
+                            <button id="attachment-btn" class="text-slate-400 hover:text-sky-400 p-2 rounded-lg transition-colors" title="添加附件">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                </svg>
+                            </button>
+                            <!-- Send Button -->
+                            <button id="send-message" class="btn-primary p-3 md:p-3.5 rounded-lg shadow-glow-sky">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </main>

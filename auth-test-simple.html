@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 用户认证测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .user-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 用户认证测试</h1>
+        
+        <div id="message"></div>
+        
+        <!-- 注册表单 -->
+        <div id="register-section">
+            <h2>用户注册</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">用户名:</label>
+                    <input type="text" id="reg-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">邮箱:</label>
+                    <input type="email" id="reg-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">密码:</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <button type="submit">注册</button>
+            </form>
+        </div>
+        
+        <hr style="margin: 30px 0;">
+        
+        <!-- 登录表单 -->
+        <div id="login-section">
+            <h2>用户登录</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">用户名或邮箱:</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密码:</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+        </div>
+        
+        <!-- 用户信息区域 -->
+        <div id="user-section" class="hidden">
+            <h2>用户信息</h2>
+            <div id="user-info" class="user-info"></div>
+            <button id="profile-btn">获取详细信息</button>
+            <button id="logout-btn" class="btn-danger">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 引入认证管理器 -->
+    <script src="js/core/auth-new.js"></script>
+    
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建认证管理器
+            window.authMgr = new AuthManager();
+            
+            // 初始化页面
+            initPage();
+            bindEvents();
+        });
+        
+        // 初始化页面显示
+        function initPage() {
+            updateDisplay();
+        }
+        
+        // 绑定事件
+        function bindEvents() {
+            // 注册表单
+            document.getElementById('register-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('reg-username').value;
+                const email = document.getElementById('reg-email').value;
+                const password = document.getElementById('reg-password').value;
+                
+                showMessage('正在注册...', 'info');
+                
+                try {
+                    const result = await window.authMgr.register(username, email, password);
+                    
+                    if (result.success) {
+                        showMessage('注册成功！', 'success');
+                        updateDisplay();
+                        // 清空表单
+                        document.getElementById('register-form').reset();
+                    } else {
+                        showMessage('注册失败: ' + result.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('注册失败: ' + error.message, 'error');
+                }
+            });
+            
+            // 登录表单
+            document.getElementById('login-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                
+                showMessage('正在登录...', 'info');
+                
+                try {
+                    const result = await window.authMgr.login(username, password);
+                    
+                    if (result.success) {
+                        showMessage('登录成功！', 'success');
+                        updateDisplay();
+                        // 清空表单
+                        document.getElementById('login-form').reset();
+                    } else {
+                        showMessage('登录失败: ' + result.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('登录失败: ' + error.message, 'error');
+                }
+            });
+            
+            // 获取用户详细信息
+            document.getElementById('profile-btn').addEventListener('click', async function() {
+                showMessage('正在获取用户信息...', 'info');
+                
+                try {
+                    const profile = await window.authMgr.getUserProfile();
+                    
+                    document.getElementById('user-info').innerHTML = `
+                        <h3>用户详细信息</h3>
+                        <p><strong>ID:</strong> ${profile.id}</p>
+                        <p><strong>用户名:</strong> ${profile.username}</p>
+                        <p><strong>邮箱:</strong> ${profile.email}</p>
+                        <p><strong>注册时间:</strong> ${new Date(profile.created_at).toLocaleString()}</p>
+                    `;
+                    
+                    showMessage('用户信息获取成功！', 'success');
+                } catch (error) {
+                    showMessage('获取用户信息失败: ' + error.message, 'error');
+                }
+            });
+            
+            // 退出登录
+            document.getElementById('logout-btn').addEventListener('click', async function() {
+                if (confirm('确定要退出登录吗？')) {
+                    try {
+                        await window.authMgr.logout(true); // 传入true跳过自动跳转
+                        showMessage('退出登录成功！', 'success');
+                        updateDisplay();
+                    } catch (error) {
+                        showMessage('退出登录失败: ' + error.message, 'error');
+                        updateDisplay(); // 即使失败也更新显示
+                    }
+                }
+            });
+        }
+        
+        // 更新页面显示
+        function updateDisplay() {
+            const registerSection = document.getElementById('register-section');
+            const loginSection = document.getElementById('login-section');
+            const userSection = document.getElementById('user-section');
+            const userInfo = document.getElementById('user-info');
+            
+            if (window.authMgr && window.authMgr.isAuthenticated()) {
+                // 已登录状态
+                registerSection.classList.add('hidden');
+                loginSection.classList.add('hidden');
+                userSection.classList.remove('hidden');
+                
+                const user = window.authMgr.getCurrentUser();
+                if (user) {
+                    userInfo.innerHTML = `
+                        <h3>当前用户</h3>
+                        <p><strong>用户名:</strong> ${user.username}</p>
+                        <p><strong>邮箱:</strong> ${user.email}</p>
+                        <p><strong>状态:</strong> 已登录</p>
+                    `;
+                }
+            } else {
+                // 未登录状态
+                registerSection.classList.remove('hidden');
+                loginSection.classList.remove('hidden');
+                userSection.classList.add('hidden');
+                
+                // 清空消息
+                if (!document.getElementById('message').textContent.includes('注册') && 
+                    !document.getElementById('message').textContent.includes('登录')) {
+                    clearMessage();
+                }
+            }
+        }
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+        }
+        
+        // 清空消息
+        function clearMessage() {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = '';
+            messageDiv.className = '';
+        }
+    </script>
+</body>
+</html> 
