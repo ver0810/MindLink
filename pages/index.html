@@ -38,9 +38,23 @@
                     <a href="index.html#features" class="text-slate-300 hover:text-sky-400 transition-colors">核心功能</a>
                     <a href="index.html#mentors-preview" class="text-slate-300 hover:text-sky-400 transition-colors">导师阵容</a>
                     <a href="index.html#pricing" class="text-slate-300 hover:text-sky-400 transition-colors">订阅方案</a>
+                    <!-- 用户登录后显示的导航 -->
+                    <div id="user-nav-links" class="hidden space-x-8">
+                        <a href="conversation-setup.html" class="text-slate-300 hover:text-sky-400 transition-colors">开始对话</a>
+                        <a href="conversation-history.html" class="text-slate-300 hover:text-sky-400 transition-colors">历史对话</a>
+                        <a href="dashboard.html" class="text-slate-300 hover:text-sky-400 transition-colors">仪表板</a>
+                    </div>
                 </nav>
-                <div class="hidden md:flex">
-                     <button id="login-btn-header" class="px-5 py-2 text-sm bg-slate-700 text-slate-200 font-medium rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors">
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- 用户信息 -->
+                    <div id="user-menu" class="hidden items-center space-x-3">
+                        <span id="user-display" class="text-slate-300 text-sm"></span>
+                        <button id="logout-btn" class="px-4 py-2 text-sm bg-red-600 text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
+                            退出登录
+                        </button>
+                    </div>
+                    <!-- 登录按钮 -->
+                    <button id="login-btn-header" class="px-5 py-2 text-sm bg-slate-700 text-slate-200 font-medium rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors">
                         登录
                     </button>
                 </div>
@@ -55,6 +69,16 @@
                 <a href="index.html#features" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">核心功能</a>
                 <a href="index.html#mentors-preview" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">导师阵容</a>
                 <a href="index.html#pricing" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">订阅方案</a>
+                <!-- 用户登录后显示的移动端导航 -->
+                <div id="mobile-user-nav" class="hidden border-t border-slate-600 pt-2 mt-2">
+                    <a href="conversation-setup.html" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">开始对话</a>
+                    <a href="conversation-history.html" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">历史对话</a>
+                    <a href="dashboard.html" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">仪表板</a>
+                    <div class="px-4 py-2 text-slate-400 border-t border-slate-600 mt-2">
+                        <span id="mobile-user-display" class="text-sm"></span>
+                        <button id="mobile-logout-btn" class="block mt-2 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700">退出登录</button>
+                    </div>
+                </div>
                 <button id="login-btn-mobile" class="block w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">登录</button>
             </div>
         </header>

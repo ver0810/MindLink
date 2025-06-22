@@ -1,4 +1,4 @@
-// FounderMind Platform - 简化的对话系统
+// FounderMind Platform - 增强的对话系统
 document.addEventListener('DOMContentLoaded', function() {
     // 初始化移动端菜单
     initMobileMenu();
@@ -6,9 +6,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // 检查导师数据
     if (!checkMentorsData()) return;
     
+    // 初始化增强版对话引擎
+    initEnhancedConversationEngine();
+    
     // 初始化对话系统
     initConversationSystem();
 });
+
+// 初始化增强版对话引擎
+function initEnhancedConversationEngine() {
+    if (typeof ConversationEngineEnhanced !== 'undefined') {
+        window.conversationEngine = new ConversationEngineEnhanced();
+        console.log('增强版对话引擎已初始化');
+    } else {
+        console.warn('增强版对话引擎未加载，使用简化版功能');
+    }
+}
 
 // 初始化移动端菜单duo
 function initMobileMenu() {
@@ -85,7 +98,10 @@ function initConversationSystem() {
     
     updateChatHeader(currentMentorsInfo, conversationMode);
     initializeChat(currentMentorsInfo, conversationMode, primaryMentorForUI);
-    populateSuggestedQuestions(primaryMentorForUI); // Use primary mentor's questions
+    populateSuggestedQuestions(primaryMentorForUI);
+    
+    // 创建增强版对话记录
+    initializeEnhancedConversation(currentMentorsInfo, conversationMode); // Use primary mentor's questions
 
     const selectedQuestionTemplate = sessionStorage.getItem('selectedQuestion');
     if (selectedQuestionTemplate) {
@@ -119,6 +135,8 @@ function initConversationSystem() {
             }
         });
     }
+
+
 
     // API Configuration Modal Logic
     const apiConfigBtn = document.getElementById('api-config-btn');
@@ -168,6 +186,47 @@ function initConversationSystem() {
             howToAskModal.classList.replace('flex', 'hidden');
         }
     });
+}
+
+// 初始化增强版对话记录
+async function initializeEnhancedConversation(mentorsInfo, mode) {
+    if (!window.conversationEngine) {
+        console.warn('增强版对话引擎未初始化');
+        return;
+    }
+    
+    try {
+        // 检查用户是否登录，决定是否启用数据库保存
+        const authToken = localStorage.getItem('auth_token');
+        if (authToken) {
+            window.conversationEngine.settings.saveToDatabase = true;
+            console.log('用户已登录，对话记录将自动保存到数据库');
+        } else {
+            window.conversationEngine.settings.saveToDatabase = false;
+            console.log('用户未登录，对话记录仅保存到本地存储');
+        }
+        
+        // 创建对话记录
+        const primaryMentor = mentorsInfo[0];
+        const conversationTitle = mode === '1v1' 
+            ? `与${primaryMentor.name}的对话` 
+            : `圆桌对话：${mentorsInfo.map(m => m.name).join('、')}`;
+        
+        // 将前端mode值映射为数据库支持的值
+        const dbMode = mode === '1v1' ? 'single' : (mode === '1vMany' ? 'roundtable' : mode);
+        
+        const conversationId = await window.conversationEngine.createConversation({
+            title: conversationTitle,
+            mode: dbMode,
+            mentors: mentorsInfo,
+            tags: [mode, ...mentorsInfo.map(m => m.name)]
+        });
+        
+        console.log('本地对话记录已创建, ID:', conversationId);
+    } catch (error) {
+        console.error('创建对话记录失败:', error);
+        // 即使对话引擎创建失败，也不影响基本对话功能
+    }
 }
 
 function updateChatHeader(mentorsInfo, mode) {
@@ -307,7 +366,7 @@ function initializeChat(mentorsInfo, mode, primaryMentor) {
         selectedFiles = [];
 
         // 添加到对话历史（使用包含文件内容的完整消息）
-        addToConversationHistory('user', finalMessageText);
+        await addToConversationHistory('user', finalMessageText);
 
         simulateMentorTyping(chatMessages, primaryMentor);
 
@@ -319,7 +378,7 @@ function initializeChat(mentorsInfo, mode, primaryMentor) {
             // 使用流式输出显示回复
             await addMentorMessageStreaming(chatMessages, primaryMentor, response);
             // 添加助手回复到对话历史
-            addToConversationHistory('assistant', response);
+            await addToConversationHistory('assistant', response);
             
         } catch (error) {
             console.error('Error generating response:', error);
@@ -332,7 +391,7 @@ function initializeChat(mentorsInfo, mode, primaryMentor) {
             // 如果API调用失败，回退到预设回复
             const fallbackResponse = await generateMentorResponseFallback(mentorsInfo, messageText, mode, primaryMentor);
             await addMentorMessageStreaming(chatMessages, primaryMentor, fallbackResponse);
-            addToConversationHistory('assistant', fallbackResponse);
+            await addToConversationHistory('assistant', fallbackResponse);
         }
     }
 
@@ -390,11 +449,42 @@ function buildSystemPrompt(mentorsInfo, mode) {
 }
 
 // 添加消息到对话历史
-function addToConversationHistory(role, content) {
+async function addToConversationHistory(role, content) {
     conversationHistory.push({
         role: role,
         content: content
     });
+    
+    // 保存消息到数据库功能
+    if (window.conversationEngine && role !== 'system') {
+        try {
+            const messageObj = {
+                role: role === 'user' ? 'user' : 'assistant',
+                content: content,
+                metadata: {
+                    timestamp: new Date().toISOString(),
+                    source: role === 'user' ? 'user_input' : 'ai_response'
+                }
+            };
+            await window.conversationEngine.saveMessageToDatabase(messageObj);
+            console.log(`消息已保存到数据库: ${role}`);
+        } catch (error) {
+            console.error('保存消息到数据库失败:', error);
+        }
+    }
+    
+    // 保存到本地存储
+    if (window.conversationEngine && role !== 'system') {
+        window.conversationEngine.addMessageToHistory({
+            role: role === 'user' ? 'user' : 'assistant',
+            content: content,
+            timestamp: new Date().toISOString(),
+            metadata: {
+                source: role === 'user' ? 'user_input' : 'ai_response'
+            }
+        });
+        console.log(`消息已保存到本地存储: ${role}`);
+    }
     
     // 保持历史记录在合理范围内
     if (conversationHistory.length > CONFIG.CONVERSATION.MAX_HISTORY * 2 + 1) {
@@ -731,3 +821,5 @@ function checkApiStatus() {
         }, 2000);
     }
 }
+
+

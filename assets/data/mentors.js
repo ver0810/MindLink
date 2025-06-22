@@ -67,7 +67,7 @@ const mentors = [
     {
         id: 'musk',
         name: 'Elon Musk',
-        title: 'Tesla, SpaceX, X (前Twitter)创始人',
+        title: 'Tesla, SpaceX, X（原Twitter）, Neuralink、The Boring Company 创始人兼负责人',
         avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg/440px-Elon_Musk_Royal_Society_%28crop2%29.jpg',
         shortBio: '连续创业者，以颠覆性创新和跨领域思维著称，致力于解决人类面临的重大挑战。',
         bio: 'Elon Musk是多家创新公司的创始人，包括Tesla、SpaceX、Neuralink和The Boring Company。他以远大的愿景、颠覆性思维和跨领域创新能力著称。Musk将创业视为解决人类面临的重大挑战的途径，如可持续能源、太空探索和人工智能安全。他的领导风格兼具技术深度和商业敏锐度，但也因工作强度高和直言不讳而引起争议。',
@@ -146,4 +146,15 @@ const mentors = [
     //     ]
     // }
 ];
+
+// 导出导师数据
+// 浏览器环境 - 使用全局变量
+if (typeof window !== 'undefined') {
+    window.mentorsData = { mentors };
+}
+
+// Node.js环境 - 使用module.exports
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { mentors };
+}
 

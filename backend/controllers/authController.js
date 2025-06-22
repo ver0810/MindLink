@@ -1,4 +1,4 @@
-const database = require('../utils/database');
+const { pgConfig } = require('../config/postgresql');
 const PasswordUtil = require('../utils/password');
 const JWTUtil = require('../utils/jwt');
 
@@ -27,12 +27,12 @@ class AuthController {
             }
 
             // 检查用户名是否已存在
-            const existingUsername = await database.get(
-                'SELECT id FROM users WHERE username = ?',
+            const existingUsername = await pgConfig.query(
+                'SELECT id FROM users WHERE username = $1',
                 [username]
             );
 
-            if (existingUsername) {
+            if (existingUsername.rows.length > 0) {
                 return res.status(400).json({
                     success: false,
                     message: '用户名已被使用'
@@ -40,12 +40,12 @@ class AuthController {
             }
 
             // 检查邮箱是否已存在
-            const existingEmail = await database.get(
-                'SELECT id FROM users WHERE email = ?',
+            const existingEmail = await pgConfig.query(
+                'SELECT id FROM users WHERE email = $1',
                 [email]
             );
 
-            if (existingEmail) {
+            if (existingEmail.rows.length > 0) {
                 return res.status(400).json({
                     success: false,
                     message: '邮箱已被使用'
@@ -55,15 +55,17 @@ class AuthController {
             // 加密密码
             const passwordHash = await PasswordUtil.hashPassword(password);
 
-            // 创建用户
-            const result = await database.run(
-                'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-                [username, email, passwordHash]
+            // 创建用户 - 添加salt字段以匹配数据库表结构
+            const result = await pgConfig.query(
+                'INSERT INTO users (username, email, password_hash, salt) VALUES ($1, $2, $3, $4) RETURNING id',
+                [username, email, passwordHash, 'bcrypt_internal'] // bcrypt内置salt处理
             );
+
+            const userId = result.rows[0].id;
 
             // 生成JWT Token
             const token = JWTUtil.generateToken({
-                userId: result.id,
+                id: userId,
                 username: username,
                 email: email
             });
@@ -74,7 +76,7 @@ class AuthController {
                 data: {
                     token,
                     user: {
-                        id: result.id,
+                        id: userId,
                         username,
                         email
                     }
@@ -104,17 +106,19 @@ class AuthController {
             }
 
             // 查找用户（支持用户名或邮箱登录）
-            const user = await database.get(
-                'SELECT * FROM users WHERE username = ? OR email = ?',
-                [username, username]
+            const userResult = await pgConfig.query(
+                'SELECT * FROM users WHERE username = $1 OR email = $1',
+                [username]
             );
 
-            if (!user) {
+            if (userResult.rows.length === 0) {
                 return res.status(400).json({
                     success: false,
                     message: '用户名或密码错误'
                 });
             }
+
+            const user = userResult.rows[0];
 
             // 验证密码
             const isPasswordValid = await PasswordUtil.verifyPassword(password, user.password_hash);
@@ -125,26 +129,36 @@ class AuthController {
                 });
             }
 
-            // 检查用户状态
-            if (user.status !== 'active') {
-                return res.status(400).json({
-                    success: false,
-                    message: '账户已被禁用'
-                });
-            }
-
             // 生成JWT Token
             const token = JWTUtil.generateToken({
-                userId: user.id,
+                id: user.id,
                 username: user.username,
                 email: user.email
             });
 
-            // 记录登录会话（可选）
-            await database.run(
-                'INSERT INTO user_sessions (user_id, token_hash, expires_at) VALUES (?, ?, ?)',
-                [user.id, token.substring(0, 50), new Date(Date.now() + 2 * 60 * 60 * 1000)] // 2小时后过期
-            );
+            // 记录登录会话（清理旧会话后添加新会话）
+            try {
+                // 先清理该用户的旧会话
+                await pgConfig.query(
+                    'DELETE FROM user_sessions WHERE user_id = $1',
+                    [user.id]
+                );
+                
+                // 生成唯一的session_token（使用完整JWT + 时间戳）
+                const sessionToken = token + '_' + Date.now();
+                const refreshToken = 'refresh_' + Math.random().toString(36).substring(2) + Date.now();
+                
+                // 插入新会话
+                await pgConfig.query(
+                    'INSERT INTO user_sessions (user_id, session_token, refresh_token, expires_at) VALUES ($1, $2, $3, $4)',
+                    [user.id, sessionToken, refreshToken, new Date(Date.now() + 2 * 60 * 60 * 1000)] // 2小时后过期
+                );
+                
+                console.log('✅ 用户会话记录成功');
+            } catch (sessionError) {
+                console.warn('记录会话失败:', sessionError.message);
+                // 不阻止登录，继续执行
+            }
 
             res.json({
                 success: true,
@@ -171,11 +185,11 @@ class AuthController {
     // 用户退出登录
     static async logout(req, res) {
         try {
-            const { userId } = req.user; // 从认证中间件获取
+            const userId = req.user.id; // 从认证中间件获取
 
             // 清理用户会话
-            await database.run(
-                'DELETE FROM user_sessions WHERE user_id = ?',
+            await pgConfig.query(
+                'DELETE FROM user_sessions WHERE user_id = $1',
                 [userId]
             );
 
@@ -196,23 +210,33 @@ class AuthController {
     // 获取用户信息
     static async getProfile(req, res) {
         try {
-            const { userId } = req.user;
+            const userId = req.user.id;
 
-            const user = await database.get(
-                'SELECT id, username, email, created_at FROM users WHERE id = ?',
+            const userResult = await pgConfig.query(
+                'SELECT id, username, email, created_at, updated_at FROM users WHERE id = $1',
                 [userId]
             );
 
-            if (!user) {
+            if (userResult.rows.length === 0) {
                 return res.status(404).json({
                     success: false,
                     message: '用户不存在'
                 });
             }
 
+            const user = userResult.rows[0];
+
             res.json({
                 success: true,
-                data: user
+                data: {
+                    user: {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        createdAt: user.created_at,
+                        updatedAt: user.updated_at
+                    }
+                }
             });
 
         } catch (error) {

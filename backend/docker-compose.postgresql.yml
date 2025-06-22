@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai_mentor_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ai_mentor_dev
+      POSTGRES_USER: ai_mentor_user
+      POSTGRES_PASSWORD: ai_mentor_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      # 数据持久化
+      - postgres_data:/var/lib/postgresql/data
+      # 初始化脚本
+      - ./database/postgresql-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      # PostgreSQL 配置优化
+      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    networks:
+      - ai_mentor_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ai_mentor_user -d ai_mentor_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis 缓存 (可选)
+  redis:
+    image: redis:7-alpine
+    container_name: ai_mentor_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ai_mentor_redis_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ai_mentor_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # pgAdmin 数据库管理工具 (开发环境)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ai_mentor_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aimentor.local
+      PGADMIN_DEFAULT_PASSWORD: admin123456
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - ai_mentor_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - development
+
+  # 应用服务器 (Node.js)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_mentor_app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ai_mentor_dev
+      DB_USER: ai_mentor_user
+      DB_PASSWORD: ai_mentor_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ai_mentor_redis_password
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - ai_mentor_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - development
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  ai_mentor_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

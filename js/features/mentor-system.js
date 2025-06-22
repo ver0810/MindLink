@@ -31,13 +31,13 @@ class MentorSystem {
         try {
             // 从数据文件加载导师信息
             if (window.mentorsData) {
-                this.mentors = window.mentorsData;
+                this.mentors = window.mentorsData.mentors || [];
             } else {
                 // 动态加载导师数据
                 const response = await fetch('./assets/data/mentors.js');
                 const script = await response.text();
                 eval(script);
-                this.mentors = window.mentorsData || [];
+                this.mentors = window.mentorsData?.mentors || [];
             }
         } catch (error) {
             console.error('加载导师数据失败:', error);
