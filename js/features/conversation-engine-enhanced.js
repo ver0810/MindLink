@@ -399,6 +399,9 @@ class ConversationEngineEnhanced {
             if (this.settings.saveToDatabase && this.authToken && this.currentConversation.databaseId) {
                 try {
                     await this.saveMessageToDatabase(responseObj);
+                    
+                    // 实时生成标签 - 在保存消息后立即执行
+                    await this.generateRealtimeTags();
                 } catch (error) {
                     console.error('保存AI回复到数据库失败:', error);
                 }
@@ -427,6 +430,61 @@ class ConversationEngineEnhanced {
         } finally {
             this.isProcessing = false;
             this.dispatchEvent('messageProcessingEnd', { message: messageObj });
+        }
+    }
+
+    /**
+     * 实时生成标签
+     * 在每次对话交互后立即生成标签，避免信息爆炸
+     */
+    async generateRealtimeTags() {
+        if (!this.currentConversation?.databaseId || !this.authToken) return;
+        
+        try {
+            // 只有当消息数量达到2条以上时才生成标签
+            if (this.conversationHistory.length < 2) return;
+            
+            // 准备当前对话的消息数据
+            const messages = this.conversationHistory.map(msg => ({
+                content: msg.content,
+                role: msg.role,
+                timestamp: msg.timestamp
+            }));
+
+            // 调用实时分析API
+            const response = await fetch(`${this.apiBaseUrl}/conversation-analysis/analyze`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.authToken}`
+                },
+                body: JSON.stringify({
+                    messages: messages,
+                    conversationId: this.currentConversation.databaseId
+                })
+            });
+
+            if (response.ok) {
+                const analysisResult = await response.json();
+                
+                // 更新当前对话的标签信息
+                if (this.currentConversation.metadata) {
+                    this.currentConversation.metadata.realtimeTags = analysisResult.problemCategories || [];
+                    this.currentConversation.metadata.lastTagUpdate = new Date().toISOString();
+                }
+                
+                // 触发标签更新事件
+                this.dispatchEvent('tagsUpdated', {
+                    conversationId: this.currentConversation.databaseId,
+                    tags: analysisResult.problemCategories || [],
+                    analysis: analysisResult
+                });
+                
+                console.log('实时标签生成完成:', analysisResult.problemCategories);
+            }
+        } catch (error) {
+            console.error('实时标签生成失败:', error);
+            // 失败时不影响主流程，只记录错误
         }
     }
 

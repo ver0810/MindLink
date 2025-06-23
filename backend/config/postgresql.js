@@ -9,6 +9,7 @@ const path = require('path');
 class PostgreSQLConfig {
     constructor() {
         this.pool = null;
+        this.initialized = false;
         this.config = {
             host: process.env.DB_HOST || 'localhost',
             port: process.env.DB_PORT || 5432,
@@ -36,6 +37,10 @@ class PostgreSQLConfig {
      * 初始化数据库连接池
      */
     async initialize() {
+        if (this.initialized) {
+            return true;
+        }
+
         try {
             this.pool = new Pool(this.config);
             
@@ -51,9 +56,12 @@ class PostgreSQLConfig {
             // 设置连接池事件监听
             this.setupPoolEvents();
             
+            this.initialized = true;
             return true;
         } catch (error) {
             console.error('❌ PostgreSQL连接失败:', error);
+            this.pool = null;
+            this.initialized = false;
             throw error;
         }
     }
@@ -62,6 +70,8 @@ class PostgreSQLConfig {
      * 设置连接池事件监听
      */
     setupPoolEvents() {
+        if (!this.pool) return;
+
         this.pool.on('connect', (client) => {
             console.log('🔗 新的PostgreSQL连接已建立');
         });
@@ -89,6 +99,11 @@ class PostgreSQLConfig {
      * 执行查询 - 针对对话查询优化
      */
     async query(text, params = []) {
+        if (!this.pool) {
+            console.error('❌ 数据库连接池未初始化');
+            throw new Error('数据库连接池未初始化，请先启动PostgreSQL服务');
+        }
+
         const start = Date.now();
         try {
             const result = await this.pool.query(text, params);
@@ -98,6 +113,8 @@ class PostgreSQLConfig {
             if (duration > 1000) {
                 console.warn(`🐌 慢查询检测 (${duration}ms):`, text.substring(0, 100));
             }
+            
+            console.log(`执行查询: ${JSON.stringify({ text: text.trim(), duration, rows: result.rowCount })}`);
             
             return result;
         } catch (error) {

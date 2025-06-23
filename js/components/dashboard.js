@@ -574,7 +574,7 @@ class DashboardConversationHistory {
 
             if (response.ok) {
                 const data = await response.json();
-                this.statistics = data.data;
+                this.statistics = data.data || {};
                 this.renderStatistics();
             }
         } catch (error) {
@@ -588,7 +588,7 @@ class DashboardConversationHistory {
     renderStatistics() {
         if (!this.statistics) return;
 
-        const { basicStats } = this.statistics;
+        const basicStats = this.statistics.basicStats || {};
         
         const totalConv = document.getElementById('total-conversations');
         const totalMsg = document.getElementById('total-messages');
@@ -672,20 +672,24 @@ class DashboardConversationHistory {
         if (this.conversations.length === 0) {
             this.showElement('empty-state');
             this.hideElement('conversations-container');
+            this.hideElement('load-more-btn');
             return;
         }
 
-        this.showElement('conversations-container');
         this.hideElement('empty-state');
+        this.showElement('conversations-container');
 
-        if (this.currentPage === 1) {
-            container.innerHTML = '';
-        }
-
-        this.conversations.slice((this.currentPage - 1) * this.pageSize).forEach(conversation => {
+        // 渲染对话卡片
+        container.innerHTML = '';
+        this.conversations.forEach(conversation => {
             const card = this.createConversationCard(conversation);
             container.appendChild(card);
         });
+
+        // 更新加载更多按钮状态
+        this.updateLoadMoreButton();
+
+        // 移除批量分析 - 现在标签是在对话过程中实时生成的
     }
 
     /**
@@ -697,9 +701,16 @@ class DashboardConversationHistory {
         
         const mentorName = conversation.primary_mentor_name || conversation.mentor_name || '未知导师';
         const lastMessage = conversation.last_message || '暂无消息';
-        const messageCount = conversation.message_count || 0;
-        const updatedAt = new Date(conversation.updated_at).toLocaleString('zh-CN');
+        const messageCount = conversation.messageCount || conversation.message_count || 0;
+        const updatedAt = new Date(conversation.updatedAt || conversation.updated_at).toLocaleString('zh-CN');
         const isFavorite = conversation.is_favorite;
+        
+        // 分析相关数据
+        const summary = conversation.summary || conversation.aiSummary;
+        const problemCategories = conversation.problemCategories || conversation.problem_categories || [];
+        const keyTopics = conversation.keyTopics || conversation.key_topics || [];
+        const autoTags = conversation.autoTags || conversation.auto_tags || [];
+        const complexityLevel = conversation.complexityLevel || conversation.complexity_level || 1;
         
         card.innerHTML = `
             <div class="flex justify-between items-start mb-4">
@@ -727,6 +738,34 @@ class DashboardConversationHistory {
                             ${updatedAt}
                         </span>
                     </div>
+                    
+                    <!-- 标签显示 -->
+                    ${problemCategories.length > 0 ? `
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${problemCategories.slice(0, 5).map(category => 
+                                `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    ${this.formatTagName(category)}
+                                </span>`
+                            ).join('')}
+                            ${problemCategories.length > 5 ? 
+                                `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-500/20 text-slate-400 border border-slate-500/30">
+                                    +${problemCategories.length - 5}个类型
+                                </span>` : ''
+                            }
+                        </div>
+                    ` : ''}
+                    
+
+                    
+                    <!-- 最后消息（如果没有总结的话） -->
+                    ${!summary ? `
+                        <div class="text-slate-300 text-sm line-clamp-2">
+                            ${this.escapeHtml(lastMessage)}
+                        </div>
+                    ` : ''}
                 </div>
                 <div class="flex items-center space-x-2">
                     ${isFavorite ? `
@@ -739,16 +778,13 @@ class DashboardConversationHistory {
                 </div>
             </div>
             
-            <div class="text-slate-300 text-sm line-clamp-2 mb-4">
-                ${this.escapeHtml(lastMessage)}
-            </div>
-            
             <div class="flex justify-between items-center">
                 <div class="flex space-x-2">
                     <button class="view-conversation bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded text-sm transition-colors" 
                             data-conversation-id="${conversation.id}">
                         查看详情
                     </button>
+
                     <button class="toggle-favorite ${isFavorite ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-slate-600 hover:bg-slate-500'} text-white px-3 py-1 rounded text-sm transition-colors" 
                             data-conversation-id="${conversation.id}" 
                             data-is-favorite="${isFavorite}"
@@ -760,15 +796,6 @@ class DashboardConversationHistory {
                         删除
                     </button>
                 </div>
-                <div class="flex items-center space-x-2">
-                    ${isFavorite ? `
-                        <div class="text-yellow-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        </div>
-                    ` : ''}
-                </div>
             </div>
         `;
 
@@ -777,9 +804,16 @@ class DashboardConversationHistory {
         const favoriteBtn = card.querySelector('.toggle-favorite');
         const deleteBtn = card.querySelector('.delete-conversation');
 
+        console.log('绑定事件 - 对话ID:', conversation.id, '按钮找到:', {
+            viewBtn: !!viewBtn,
+            favoriteBtn: !!favoriteBtn,
+            deleteBtn: !!deleteBtn
+        });
+
         if (viewBtn) {
             viewBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                console.log('点击查看详情按钮, ID:', conversation.id);
                 this.viewConversation(conversation.id);
             });
         }
@@ -798,6 +832,8 @@ class DashboardConversationHistory {
             });
         }
 
+        // 移除后期分析 - 现在标签在对话过程中实时生成
+
         return card;
     }
 
@@ -806,21 +842,31 @@ class DashboardConversationHistory {
      */
     async viewConversation(conversationId) {
         try {
+            console.log('查看对话详情, ID:', conversationId);
+            
+            const token = localStorage.getItem('auth_token');
+            console.log('认证token:', token ? '存在' : '不存在');
+            
             const response = await fetch(`http://localhost:3000/api/conversations/${conversationId}`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
+            console.log('API响应状态:', response.status);
+
             if (response.ok) {
                 const data = await response.json();
+                console.log('对话数据:', data);
                 this.showConversationModal(data.data.conversation);
             } else {
-                this.showError('加载对话详情失败');
+                const errorText = await response.text();
+                console.error('API错误响应:', errorText);
+                this.showError(`加载对话详情失败: ${response.status}`);
             }
         } catch (error) {
             console.error('查看对话失败:', error);
-            this.showError('加载对话详情失败');
+            this.showError('加载对话详情失败: ' + error.message);
         }
     }
 
@@ -1100,14 +1146,16 @@ class DashboardConversationHistory {
 
             if (response.ok) {
                 const data = await response.json();
-                const mentors = data.data;
+                const mentors = data.data || [];
                 
-                mentors.forEach(mentor => {
-                    const option = document.createElement('option');
-                    option.value = mentor.mentor_id;
-                    option.textContent = mentor.mentor_name;
-                    mentorFilter.appendChild(option);
-                });
+                if (Array.isArray(mentors)) {
+                    mentors.forEach(mentor => {
+                        const option = document.createElement('option');
+                        option.value = mentor.id;
+                        option.textContent = mentor.name;
+                        mentorFilter.appendChild(option);
+                    });
+                }
             }
         } catch (error) {
             console.error('加载导师列表失败:', error);
@@ -1181,6 +1229,56 @@ class DashboardConversationHistory {
     }
 
     /**
+     * 格式化标签名称
+     */
+    formatTagName(tagName) {
+        if (!tagName) return '';
+        
+        // 处理下划线分隔的标签名
+        const formatted = tagName.replace(/_/g, ' ');
+        
+        // 处理特殊标签名映射
+        const tagMappings = {
+            'business_strategy': '商业策略',
+            'investment_advice': '投资建议',
+            'career_development': '职业发展',
+            'leadership_management': '领导管理',
+            'technology_innovation': '技术创新',
+            'market_analysis': '市场分析',
+            'personal_growth': '个人成长',
+            'financial_planning': '财务规划',
+            'sentiment_positive': '积极正面',
+            'sentiment_neutral': '中性客观',
+            'sentiment_concerned': '关注担忧',
+            'complexity_basic': '基础问题',
+            'complexity_intermediate': '中等复杂',
+            'complexity_advanced': '高度复杂'
+        };
+        
+        return tagMappings[tagName] || formatted.replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    /**
+     * 获取复杂度标签
+     */
+    getComplexityLabel(level) {
+        const labels = ['', '简单', '简单', '中等', '复杂', '非常复杂'];
+        return labels[level] || '未知';
+    }
+
+    /**
+     * 获取复杂度颜色
+     */
+    getComplexityColor(index, currentLevel) {
+        if (index <= currentLevel) {
+            if (index <= 2) return '#10B981'; // 绿色
+            if (index <= 3) return '#F59E0B'; // 黄色
+            return '#EF4444'; // 红色
+        }
+        return '#6B7280'; // 灰色
+    }
+
+    /**
      * 显示元素
      */
     showElement(elementId) {
@@ -1200,25 +1298,35 @@ class DashboardConversationHistory {
      * 显示错误信息
      */
     showError(message) {
-        // 可以使用toast通知或者其他方式显示错误
         console.error(message);
-        alert(message); // 临时使用alert，可以后续改为更好的提示方式
+        // 创建错误提示
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 5000);
     }
 
     /**
      * 显示成功信息
      */
     showSuccess(message) {
-        // 可以使用toast通知或者其他方式显示成功信息
         console.log(message);
-        // 临时使用简单的提示，可以后续改为更好的提示方式
+        // 创建成功提示
         const notification = document.createElement('div');
         notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
         notification.textContent = message;
         document.body.appendChild(notification);
         
         setTimeout(() => {
-            document.body.removeChild(notification);
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
         }, 3000);
     }
 }

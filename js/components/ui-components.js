@@ -75,6 +75,121 @@ const UIComponents = {
         return messageDiv;
     },
     
+    // 创建多导师消息气泡（新增）
+    createMultiMentorChatBubble(mentorResponses) {
+        const containerDiv = document.createElement('div');
+        containerDiv.className = 'multi-mentor-response mb-6 animate-fade-in-up';
+        
+        mentorResponses.forEach((response, index) => {
+            const { mentor, content } = response;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex justify-start ${index > 0 ? 'mt-4' : ''}`;
+            
+            messageDiv.innerHTML = `
+                <div class="flex space-x-3 max-w-[90%] lg:max-w-[85%] w-full">
+                    <img src="${mentor.avatar}" alt="${mentor.name}" 
+                         class="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover border-2 border-slate-600 flex-shrink-0 mt-1">
+                    <div class="chat-bubble-mentor flex-1 rounded-2xl rounded-bl-md px-4 py-3 shadow-lg">
+                        <div class="flex items-center mb-2">
+                            <span class="text-sky-400 text-xs font-medium">${mentor.name}</span>
+                            ${mentor.title ? `<span class="text-slate-500 text-xs ml-2">${mentor.title}</span>` : ''}
+                        </div>
+                        <div class="prose prose-sm md:prose-base prose-slate max-w-none">
+                            <p class="text-slate-100 text-sm md:text-base leading-relaxed whitespace-pre-wrap m-0">${content}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            containerDiv.appendChild(messageDiv);
+        });
+        
+        return containerDiv;
+    },
+    
+    // 创建流式多导师消息容器（新增）
+    createStreamingMultiMentorMessage(mentorResponses) {
+        const containerDiv = document.createElement('div');
+        containerDiv.className = 'multi-mentor-response mb-6 animate-fade-in-up streaming-multi-message';
+        
+        mentorResponses.forEach((response, index) => {
+            const { mentor, content } = response;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex justify-start ${index > 0 ? 'mt-4' : ''} streaming-mentor-message`;
+            messageDiv.dataset.mentorIndex = index;
+            
+            messageDiv.innerHTML = `
+                <div class="flex space-x-3 max-w-[90%] lg:max-w-[85%] w-full">
+                    <img src="${mentor.avatar}" alt="${mentor.name}" 
+                         class="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover border-2 border-slate-600 flex-shrink-0 mt-1">
+                    <div class="chat-bubble-mentor flex-1 rounded-2xl rounded-bl-md px-4 py-3 shadow-lg">
+                        <div class="flex items-center mb-2">
+                            <span class="text-sky-400 text-xs font-medium">${mentor.name}</span>
+                            ${mentor.title ? `<span class="text-slate-500 text-xs ml-2">${mentor.title}</span>` : ''}
+                        </div>
+                        <div class="prose prose-sm md:prose-base prose-slate max-w-none">
+                            <p class="text-slate-100 text-sm md:text-base leading-relaxed whitespace-pre-wrap m-0 streaming-text"></p>
+                            <span class="streaming-cursor inline-block w-0.5 h-4 bg-sky-400 ml-1 animate-pulse"></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            containerDiv.appendChild(messageDiv);
+        });
+        
+        return containerDiv;
+    },
+    
+    // 流式输出多导师文本效果（新增）
+    async streamMultiMentorText(containerElement, mentorResponses, speed = 30) {
+        const mentorMessages = containerElement.querySelectorAll('.streaming-mentor-message');
+        
+        for (let i = 0; i < mentorResponses.length; i++) {
+            const { content } = mentorResponses[i];
+            const messageElement = mentorMessages[i];
+            
+            if (!messageElement) continue;
+            
+            const textElement = messageElement.querySelector('.streaming-text');
+            const cursor = messageElement.querySelector('.streaming-cursor');
+            
+            if (!textElement) continue;
+            
+            // 为每个导师的发言添加延迟
+            if (i > 0) {
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+            
+            textElement.textContent = '';
+            
+            // 添加打字机效果
+            for (let j = 0; j < content.length; j++) {
+                await new Promise(resolve => setTimeout(resolve, speed));
+                textElement.textContent += content[j];
+                
+                // 实时滚动到底部
+                const chatContainer = containerElement.closest('#chat-messages');
+                if (chatContainer) {
+                    const shouldScroll = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight < 100;
+                    if (shouldScroll) {
+                        Utils.scrollToBottom(chatContainer, 0);
+                    }
+                }
+            }
+            
+            // 移除该导师消息的光标
+            if (cursor) {
+                cursor.remove();
+            }
+        }
+        
+        // 移除流式标记
+        containerElement.classList.remove('streaming-multi-message');
+    },
+    
     // 创建打字指示器
     createTypingIndicator(mentor) {
         const typingDiv = document.createElement('div');

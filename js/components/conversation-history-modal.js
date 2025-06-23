@@ -384,6 +384,13 @@ class ConversationHistoryModal {
         const timeStr = this.formatDate(conversation.updated_at || conversation.created_at);
         const sourceLabel = conversation.source === 'local' ? '本地' : '云端';
         
+        // 获取分析数据
+        const summary = conversation.summary || conversation.aiSummary;
+        const problemCategories = conversation.problemCategories || conversation.problem_categories || [];
+        const keyTopics = conversation.keyTopics || conversation.key_topics || [];
+        const autoTags = conversation.autoTags || conversation.auto_tags || [];
+        const complexityLevel = conversation.complexityLevel || conversation.complexity_level || 1;
+        
         card.innerHTML = `
             <div class="flex items-start justify-between">
                 <div class="flex-1 min-w-0">
@@ -399,10 +406,63 @@ class ConversationHistoryModal {
                             <p class="text-slate-400 text-sm">${this.escapeHtml(conversation.mentor_name)}</p>
                         </div>
                     </div>
+                    
+                    <!-- AI总结显示 -->
+                    ${summary ? `
+                        <div class="bg-slate-600/50 rounded-md p-2 mb-3">
+                            <div class="flex items-center mb-1">
+                                <svg class="w-3 h-3 mr-1 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-xs text-blue-400 font-medium">AI总结</span>
+                            </div>
+                            <p class="text-slate-200 text-xs leading-relaxed line-clamp-2">${this.escapeHtml(summary)}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- 标签显示 -->
+                    ${(problemCategories.length > 0 || keyTopics.length > 0 || autoTags.length > 0) ? `
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            ${problemCategories.slice(0, 2).map(category => 
+                                `<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30">
+                                    ${this.formatTagName(category)}
+                                </span>`
+                            ).join('')}
+                            ${keyTopics.slice(0, 2).map(topic => 
+                                `<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                    ${this.escapeHtml(topic)}
+                                </span>`
+                            ).join('')}
+                            ${autoTags.slice(0, 1).map(tag => 
+                                `<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                    ${this.formatTagName(tag)}
+                                </span>`
+                            ).join('')}
+                            ${(problemCategories.length + keyTopics.length + autoTags.length > 5) ? 
+                                `<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-slate-500/20 text-slate-400 border border-slate-500/30">
+                                    +${problemCategories.length + keyTopics.length + autoTags.length - 5}
+                                </span>` : ''
+                            }
+                        </div>
+                    ` : ''}
+                    
                     <div class="flex items-center justify-between text-sm text-slate-400">
                         <span>${timeStr}</span>
                         <div class="flex items-center gap-3">
-                            <span>${conversation.message_count || 0} 条消息</span>
+                            <span>${conversation.messageCount || conversation.message_count || 0} 条消息</span>
+                            ${complexityLevel > 1 ? `
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-xs">复杂度:</span>
+                                    <div class="flex space-x-0.5">
+                                        ${Array.from({length: 3}, (_, i) => {
+                                            const isActive = i < Math.min(complexityLevel, 3);
+                                            const color = this.getComplexityColor(i + 1, complexityLevel);
+                                            return `<div class="w-1.5 h-1.5 rounded-full ${isActive ? 'opacity-100' : 'opacity-30'}" 
+                                                         style="background-color: ${color}"></div>`;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
                             <span class="px-2 py-1 bg-slate-600 rounded text-xs">${sourceLabel}</span>
                             ${conversation.is_favorite ? '<span class="text-yellow-400">★</span>' : ''}
                         </div>
@@ -468,7 +528,7 @@ class ConversationHistoryModal {
             
             if (titleElement) titleElement.textContent = conversation.title;
             if (subtitleElement) {
-                subtitleElement.textContent = `${conversation.mentor_name} • ${this.formatDate(conversation.created_at)} • ${conversation.message_count || 0} 条消息`;
+                subtitleElement.textContent = `${conversation.mentorName || conversation.mentor_name} • ${this.formatDate(conversation.createdAt || conversation.created_at)} • ${conversation.messageCount || conversation.message_count || 0} 条消息`;
             }
 
             // 加载消息
@@ -811,6 +871,48 @@ class ConversationHistoryModal {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * 格式化标签名称
+     */
+    formatTagName(tagName) {
+        if (!tagName) return '';
+        
+        // 处理下划线分隔的标签名
+        const formatted = tagName.replace(/_/g, ' ');
+        
+        // 处理特殊标签名映射
+        const tagMappings = {
+            'business_strategy': '商业策略',
+            'investment_advice': '投资建议',
+            'career_development': '职业发展',
+            'leadership_management': '领导管理',
+            'technology_innovation': '技术创新',
+            'market_analysis': '市场分析',
+            'personal_growth': '个人成长',
+            'financial_planning': '财务规划',
+            'sentiment_positive': '积极正面',
+            'sentiment_neutral': '中性客观',
+            'sentiment_concerned': '关注担忧',
+            'complexity_basic': '基础问题',
+            'complexity_intermediate': '中等复杂',
+            'complexity_advanced': '高度复杂'
+        };
+        
+        return tagMappings[tagName] || formatted.replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    /**
+     * 获取复杂度颜色
+     */
+    getComplexityColor(index, currentLevel) {
+        if (index <= currentLevel) {
+            if (index <= 2) return '#10B981'; // 绿色
+            if (index <= 3) return '#F59E0B'; // 黄色
+            return '#EF4444'; // 红色
+        }
+        return '#6B7280'; // 灰色
     }
 
     /**

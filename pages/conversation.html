@@ -159,6 +159,12 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button id="conversation-analysis-btn" class="flex items-center text-slate-400 hover:text-slate-200 transition-colors bg-slate-800 px-3 py-2 rounded-lg border border-slate-600 hover:border-slate-500 text-sm hidden">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            分析总结
+                        </button>
                         <button id="how-to-ask-btn" class="flex items-center text-slate-400 hover:text-slate-200 transition-colors bg-slate-800 px-3 py-2 rounded-lg border border-slate-600 hover:border-slate-500 text-sm">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -173,6 +179,124 @@
                             API配置
                         </button>
 
+                    </div>
+                </div>
+                
+                <!-- Conversation Analysis Panel -->
+                <div id="conversation-analysis-panel" class="bg-slate-800/50 border-b border-slate-700 p-4 hidden">
+                    <div class="max-w-6xl mx-auto">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-slate-100 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                对话分析与总结
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <button id="generate-analysis-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm transition-colors">
+                                    生成分析
+                                </button>
+                                <button id="close-analysis-panel" class="text-slate-400 hover:text-slate-200 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="analysis-content" class="space-y-4">
+                            <div id="analysis-loading" class="text-center py-8 hidden">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                                <div class="text-slate-400">正在分析对话内容...</div>
+                            </div>
+                            
+                            <div id="analysis-results" class="hidden">
+                                <!-- AI总结 -->
+                                <div class="bg-slate-700/50 rounded-lg p-4 mb-4">
+                                    <h4 class="text-sm font-semibold text-slate-300 mb-2 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        AI总结
+                                    </h4>
+                                    <p id="conversation-summary" class="text-slate-200 leading-relaxed">暂无总结</p>
+                                </div>
+                                
+                                <!-- 标签区域 -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <!-- 问题类型 -->
+                                    <div class="bg-slate-700/30 rounded-lg p-3">
+                                        <h5 class="text-xs font-medium text-slate-400 mb-2">问题类型</h5>
+                                        <div id="problem-categories" class="flex flex-wrap gap-1">
+                                            <!-- 问题类型标签将在这里显示 -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 关键话题 -->
+                                    <div class="bg-slate-700/30 rounded-lg p-3">
+                                        <h5 class="text-xs font-medium text-slate-400 mb-2">关键话题</h5>
+                                        <div id="key-topics" class="flex flex-wrap gap-1">
+                                            <!-- 关键话题标签将在这里显示 -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 智能标签 -->
+                                    <div class="bg-slate-700/30 rounded-lg p-3">
+                                        <h5 class="text-xs font-medium text-slate-400 mb-2">智能标签</h5>
+                                        <div id="auto-tags" class="flex flex-wrap gap-1">
+                                            <!-- 智能标签将在这里显示 -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 复杂度和洞察 -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    <!-- 复杂度指示器 -->
+                                    <div class="bg-slate-700/30 rounded-lg p-3">
+                                        <h5 class="text-xs font-medium text-slate-400 mb-2">复杂度等级</h5>
+                                        <div class="flex items-center space-x-2">
+                                            <div id="complexity-indicator" class="flex space-x-1">
+                                                <!-- 复杂度圆点将在这里显示 -->
+                                            </div>
+                                            <span id="complexity-label" class="text-sm text-slate-300">未评估</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 情感分析 -->
+                                    <div class="bg-slate-700/30 rounded-lg p-3">
+                                        <h5 class="text-xs font-medium text-slate-400 mb-2">情感倾向</h5>
+                                        <div id="sentiment-analysis" class="text-sm text-slate-300">
+                                            <!-- 情感分析结果将在这里显示 -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 关键洞察 -->
+                                <div id="key-insights-section" class="bg-slate-700/30 rounded-lg p-3 hidden">
+                                    <h5 class="text-xs font-medium text-slate-400 mb-2">关键洞察</h5>
+                                    <ul id="key-insights" class="text-sm text-slate-300 space-y-1">
+                                        <!-- 关键洞察列表将在这里显示 -->
+                                    </ul>
+                                </div>
+                                
+                                <!-- 建议行动 -->
+                                <div id="suggested-actions-section" class="bg-slate-700/30 rounded-lg p-3 hidden">
+                                    <h5 class="text-xs font-medium text-slate-400 mb-2">建议行动</h5>
+                                    <ul id="suggested-actions" class="text-sm text-slate-300 space-y-1">
+                                        <!-- 建议行动列表将在这里显示 -->
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div id="analysis-empty" class="text-center py-8">
+                                <div class="text-slate-400 mb-4">
+                                    <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                    开始对话后，点击"生成分析"按钮来获取智能总结和标签
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- Chat Messages -->

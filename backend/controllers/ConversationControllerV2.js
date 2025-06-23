@@ -10,18 +10,62 @@
  */
 
 const ConversationService = require('../services/ConversationService');
-const AuthService = require('../services/AuthService');
-const ValidationService = require('../services/ValidationService');
-const RateLimitService = require('../services/RateLimitService');
-const LoggerService = require('../services/LoggerService');
+const { getInstance: getAuthService } = require('../services/AuthService');
+const { getInstance: getValidationService } = require('../services/ValidationService');
+const { getInstance: getRateLimitService } = require('../services/RateLimitService');
+const { getInstance: getLoggerService } = require('../services/LoggerService');
 
 class ConversationControllerV2 {
     constructor() {
-        this.conversationService = new ConversationService();
-        this.authService = new AuthService();
-        this.validation = new ValidationService();
-        this.rateLimit = new RateLimitService();
-        this.logger = new LoggerService();
+        try {
+            this.conversationService = new ConversationService();
+            this.authService = getAuthService();
+            this.validation = getValidationService();
+            this.rateLimit = getRateLimitService();
+            
+            // 安全初始化 logger
+            try {
+                this.logger = getLoggerService();
+            } catch (loggerError) {
+                console.warn('LoggerService 初始化失败，使用默认日志:', loggerError.message);
+                this.logger = null;
+            }
+            
+            // 防护性检查和默认实现
+            if (!this.logger) {
+                console.warn('LoggerService 初始化失败，使用控制台日志');
+                this.logger = {
+                    error: (...args) => console.error('[ERROR]', ...args),
+                    warn: (...args) => console.warn('[WARN]', ...args),
+                    info: (...args) => console.info('[INFO]', ...args),
+                    debug: (...args) => console.debug('[DEBUG]', ...args),
+                    logUserAction: (userId, action, data) => {
+                        console.info(`[USER_ACTION] ${action} - 用户ID: ${userId}`, data);
+                    }
+                };
+            } else {
+                // 如果没有 logUserAction 方法，添加一个
+                if (!this.logger.logUserAction) {
+                    this.logger.logUserAction = (userId, action, data) => {
+                        this.logger.info(`用户操作: ${action}`, { userId, ...data });
+                    };
+                }
+            }
+            
+            console.log('ConversationControllerV2 初始化成功');
+        } catch (error) {
+            console.error('ConversationControllerV2 初始化失败:', error);
+            // 提供最小日志功能
+            this.logger = {
+                error: (...args) => console.error('[ERROR]', ...args),
+                warn: (...args) => console.warn('[WARN]', ...args),
+                info: (...args) => console.info('[INFO]', ...args),
+                debug: (...args) => console.debug('[DEBUG]', ...args),
+                logUserAction: (userId, action, data) => {
+                    console.info(`[USER_ACTION] ${action} - 用户ID: ${userId}`, data);
+                }
+            };
+        }
     }
 
     /**
@@ -66,7 +110,9 @@ class ConversationControllerV2 {
             const conversation = await this.conversationService.createConversation(createParams);
 
             // 5. 记录操作日志
-            await this.logger.logUserAction(req.user.id, 'conversation_created', {
+            this.logger.info('用户创建对话', {
+                userId: req.user.id,
+                action: 'conversation_created',
                 conversationId: conversation.id,
                 mentorId: req.body.mentorId,
                 ip: req.ip,
@@ -79,10 +125,12 @@ class ConversationControllerV2 {
             });
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('创建对话失败', {
                 action: 'create_conversation',
                 userId: req.user?.id,
-                body: req.body
+                body: req.body,
+                error: error.message,
+                stack: error.stack
             });
 
             return this.handleError(res, error);
@@ -115,7 +163,14 @@ class ConversationControllerV2 {
 
             // 3. 添加额外的元数据
             const responseData = {
-                ...result,
+                conversations: result.conversations,
+                total: result.pagination.total,
+                page: result.pagination.page,
+                limit: result.pagination.limit,
+                totalPages: result.pagination.totalPages,
+                hasNext: result.pagination.hasNext,
+                hasPrev: result.pagination.hasPrev,
+                filters: result.filters,
                 meta: {
                     timestamp: new Date().toISOString(),
                     requestId: req.requestId,
@@ -126,10 +181,12 @@ class ConversationControllerV2 {
             return this.sendSuccessResponse(res, 200, '获取对话列表成功', responseData);
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('获取对话列表失败', {
                 action: 'get_conversations',
                 userId: req.user?.id,
-                query: req.query
+                query: req.query,
+                error: error.message,
+                stack: error.stack
             });
 
             return this.handleError(res, error);
@@ -140,6 +197,10 @@ class ConversationControllerV2 {
      * 获取对话详情
      * GET /api/v2/conversations/:id
      */
+    async getConversation(req, res) {
+        return this.getConversationDetail(req, res);
+    }
+
     async getConversationDetail(req, res) {
         try {
             const conversationId = parseInt(req.params.id);
@@ -161,10 +222,12 @@ class ConversationControllerV2 {
             return this.sendSuccessResponse(res, 200, '获取对话详情成功', conversationDetail);
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('获取对话详情失败', {
                 action: 'get_conversation_detail',
                 conversationId: req.params.id,
-                userId: req.user?.id
+                userId: req.user?.id,
+                error: error.message,
+                stack: error.stack
             });
 
             return this.handleError(res, error);
@@ -226,12 +289,12 @@ class ConversationControllerV2 {
             });
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('操作失败', {
                 action: 'save_message',
                 conversationId: req.params.id,
                 userId: req.user?.id,
                 body: req.body
-            });
+            , error: error.message, stack: error.stack });
 
             return this.handleError(res, error);
         }
@@ -280,12 +343,12 @@ class ConversationControllerV2 {
             });
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('操作失败', {
                 action: 'update_conversation',
                 conversationId: req.params.id,
                 userId: req.user?.id,
                 body: req.body
-            });
+            , error: error.message, stack: error.stack });
 
             return this.handleError(res, error);
         }
@@ -298,24 +361,52 @@ class ConversationControllerV2 {
     async deleteConversation(req, res) {
         try {
             const conversationId = parseInt(req.params.id);
+            
+            // 验证对话ID
+            if (!conversationId || conversationId <= 0) {
+                return this.sendErrorResponse(res, 400, '无效的对话ID');
+            }
+
+            // 验证用户ID
+            if (!req.user || !req.user.id) {
+                return this.sendErrorResponse(res, 401, '用户认证信息无效');
+            }
 
             // 删除对话
             await this.conversationService.deleteConversation(conversationId, req.user.id);
 
             // 记录操作日志
-            await this.logger.logUserAction(req.user.id, 'conversation_deleted', {
-                conversationId,
-                ip: req.ip
-            });
+            if (this.logger && this.logger.logUserAction) {
+                try {
+                    await this.logger.logUserAction(req.user.id, 'conversation_deleted', {
+                        conversationId,
+                        ip: req.ip
+                    });
+                } catch (logError) {
+                    console.warn('记录用户操作日志失败:', logError.message);
+                }
+            }
 
             return this.sendSuccessResponse(res, 200, '对话删除成功');
 
         } catch (error) {
-            await this.logger.logError(error, {
-                action: 'delete_conversation',
-                conversationId: req.params.id,
-                userId: req.user?.id
-            });
+            // 安全的错误日志记录
+            if (this.logger && this.logger.error) {
+                this.logger.error('删除对话失败', {
+                    action: 'delete_conversation',
+                    conversationId: req.params.id,
+                    userId: req.user?.id,
+                    error: error.message, 
+                    stack: error.stack 
+                });
+            } else {
+                console.error('删除对话失败:', {
+                    action: 'delete_conversation',
+                    conversationId: req.params.id,
+                    userId: req.user?.id,
+                    error: error.message
+                });
+            }
 
             return this.handleError(res, error);
         }
@@ -350,11 +441,11 @@ class ConversationControllerV2 {
             return this.sendSuccessResponse(res, 200, '搜索完成', searchResults);
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('操作失败', {
                 action: 'search_conversations',
                 userId: req.user?.id,
                 query: req.query
-            });
+            , error: error.message, stack: error.stack });
 
             return this.handleError(res, error);
         }
@@ -368,15 +459,72 @@ class ConversationControllerV2 {
         try {
             const statistics = await this.conversationService.getUserStatistics(req.user.id);
 
-            return this.sendSuccessResponse(res, 200, '获取统计信息成功', {
-                statistics
+            return this.sendSuccessResponse(res, 200, '获取统计信息成功', statistics);
+
+        } catch (error) {
+            this.logger.error('获取统计信息失败', {
+                action: 'get_statistics',
+                userId: req.user?.id,
+                error: error.message,
+                stack: error.stack
+            });
+
+            return this.handleError(res, error);
+        }
+    }
+
+    /**
+     * 获取导师列表
+     * GET /api/v2/conversations/mentors
+     */
+    async getMentors(req, res) {
+        try {
+            const mentors = [
+                { id: 'buffett', name: '巴菲特', avatar: '/assets/images/mentors/buffett.jpg' },
+                { id: 'mayun', name: '马云', avatar: '/assets/images/mentors/mayun.jpg' },
+                { id: 'lijiacheng', name: '李嘉诚', avatar: '/assets/images/mentors/lijiacheng.jpg' },
+                { id: 'sam-altman', name: 'Sam Altman', avatar: '/assets/images/mentors/sam-altman.jpg' },
+                { id: 'sheryl-sandberg', name: 'Sheryl Sandberg', avatar: '/assets/images/mentors/sheryl-sandberg.jpg' },
+                { id: 'zhangxiaolong', name: '张小龙', avatar: '/assets/images/mentors/zhangxiaolong.jpg' }
+            ];
+
+            return this.sendSuccessResponse(res, 200, '获取导师列表成功', mentors);
+
+        } catch (error) {
+            this.logger.error('操作失败', {
+                action: 'get_mentors',
+                userId: req.user?.id
+            , error: error.message, stack: error.stack });
+
+            return this.handleError(res, error);
+        }
+    }
+
+    /**
+     * 切换对话收藏状态
+     * POST /api/v2/conversations/:id/favorite
+     */
+    async toggleFavorite(req, res) {
+        try {
+            const conversationId = parseInt(req.params.id);
+            
+            if (!conversationId || conversationId <= 0) {
+                return this.sendErrorResponse(res, 400, '无效的对话ID');
+            }
+
+            const result = await this.conversationService.toggleFavorite(conversationId, req.user.id);
+
+            return this.sendSuccessResponse(res, 200, '收藏状态更新成功', {
+                conversationId,
+                isFavorite: result.isFavorite
             });
 
         } catch (error) {
-            await this.logger.logError(error, {
-                action: 'get_statistics',
+            this.logger.error('操作失败', {
+                action: 'toggle_favorite',
+                conversationId: req.params.id,
                 userId: req.user?.id
-            });
+            , error: error.message, stack: error.stack });
 
             return this.handleError(res, error);
         }
@@ -410,12 +558,12 @@ class ConversationControllerV2 {
             return res.send(exportResult.data);
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('操作失败', {
                 action: 'export_conversation',
                 conversationId: req.params.id,
                 userId: req.user?.id,
                 format: req.body.format
-            });
+            , error: error.message, stack: error.stack });
 
             return this.handleError(res, error);
         }
@@ -460,11 +608,11 @@ class ConversationControllerV2 {
             return this.sendSuccessResponse(res, 200, '批量操作完成', results);
 
         } catch (error) {
-            await this.logger.logError(error, {
+            this.logger.error('操作失败', {
                 action: 'batch_operations',
                 userId: req.user?.id,
                 body: req.body
-            });
+            , error: error.message, stack: error.stack });
 
             return this.handleError(res, error);
         }
@@ -556,4 +704,4 @@ class ConversationControllerV2 {
     }
 }
 
-module.exports = ConversationControllerV2; 
+module.exports = new ConversationControllerV2(); 

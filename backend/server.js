@@ -31,6 +31,7 @@ app.use('/assets', express.static(path.join(__dirname, '../assets')));
 // API路由
 app.use('/api/auth', authRoutes);
 app.use('/api/database', databaseRoutes);
+app.use('/api/conversation-analysis', require('./routes/conversation-analysis')); // 对话分析API
 app.use('/api/conversations', conversationHistoryRoutes); // 对话历史API (放在前面，优先匹配)
 app.use('/api/conversations', conversationRoutes);
 

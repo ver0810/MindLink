@@ -127,7 +127,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    let selectedMentorForQuestion = null;
+    let selectedMentorsForQuestion = [];
+    let selectedMentorForQuestion = null; // 当前选中的单个导师
+    let conversationMode = 'single'; // 'single' or 'multi'
 
     function openQuestionModal(question) {
         document.getElementById('modal-question-title').textContent = question.title;
@@ -135,9 +137,38 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-question-template').textContent = question.template;
         document.getElementById('modal-question-why').textContent = question.why;
 
-        // Reset selected mentor
+        // Reset selected mentors
+        selectedMentorsForQuestion = [];
         selectedMentorForQuestion = null;
+        conversationMode = 'single';
+        
+        // Reset radio buttons
+        document.querySelector('input[name="conversation-mode"][value="single"]').checked = true;
+        document.querySelector('input[name="conversation-mode"][value="multi"]').checked = false;
+        document.getElementById('multi-mentor-info').classList.add('hidden');
+        
         updateUseQuestionButton();
+
+        // Add conversation mode change listeners
+        const modeRadios = document.querySelectorAll('input[name="conversation-mode"]');
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                conversationMode = this.value;
+                const multiMentorInfo = document.getElementById('multi-mentor-info');
+                if (conversationMode === 'multi') {
+                    multiMentorInfo.classList.remove('hidden');
+                } else {
+                    multiMentorInfo.classList.add('hidden');
+                    // 如果切换到单选模式，只保留第一个选中的导师
+                    if (selectedMentorsForQuestion.length > 1) {
+                        selectedMentorsForQuestion = selectedMentorsForQuestion.slice(0, 1);
+                        selectedMentorForQuestion = selectedMentorsForQuestion[0] || null;
+                        updateMentorSelection();
+                        updateUseQuestionButton();
+                    }
+                }
+            });
+        });
 
         // Show all mentors for selection
         const allMentorsContainer = document.getElementById('modal-all-mentors');
@@ -176,7 +207,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="absolute inset-0 bg-gradient-to-r from-sky-500/0 via-sky-500/0 to-sky-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             `;
             
-            mentorCard.addEventListener('click', () => selectMentor(mentor, mentorCard));
+            mentorCard.addEventListener('click', () => {
+                if (conversationMode === 'single') {
+                    selectMentor(mentor, mentorCard);
+                } else {
+                    toggleMentorSelection(mentor, mentorCard);
+                }
+            });
             allMentorsContainer.appendChild(mentorCard);
         });
 
@@ -210,50 +247,147 @@ document.addEventListener('DOMContentLoaded', function() {
         mentorCard.appendChild(indicator);
         
         selectedMentorForQuestion = mentor;
+        selectedMentorsForQuestion = [mentor];
         updateUseQuestionButton();
+    }
+
+    function toggleMentorSelection(mentor, mentorCard) {
+        const mentorIndex = selectedMentorsForQuestion.findIndex(m => m.id === mentor.id);
+        
+        if (mentorIndex > -1) {
+            // Remove mentor from selection
+            selectedMentorsForQuestion.splice(mentorIndex, 1);
+            mentorCard.classList.remove('ring-2', 'ring-sky-400', 'bg-gradient-to-br', 'from-sky-500/10', 'to-purple-500/5');
+            mentorCard.classList.add('border-slate-700/50');
+            const indicator = mentorCard.querySelector('.selected-indicator');
+            if (indicator) indicator.remove();
+        } else {
+            // Add mentor to selection
+            selectedMentorsForQuestion.push(mentor);
+            mentorCard.classList.remove('border-slate-700/50');
+            mentorCard.classList.add('ring-2', 'ring-sky-400', 'bg-gradient-to-br', 'from-sky-500/10', 'to-purple-500/5');
+            
+            // Add selected indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'selected-indicator absolute top-3 right-3 w-6 h-6 bg-gradient-to-r from-sky-400 to-sky-500 rounded-full flex items-center justify-center shadow-lg';
+            indicator.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+            mentorCard.appendChild(indicator);
+        }
+        
+        // 更新单导师选择（用于兼容单选模式）
+        selectedMentorForQuestion = selectedMentorsForQuestion[0] || null;
+        updateUseQuestionButton();
+    }
+
+    function updateMentorSelection() {
+        // 根据当前选中的导师更新UI显示
+        document.querySelectorAll('.mentor-card').forEach(card => {
+            const mentorId = card.getAttribute('data-mentor-id');
+            const isSelected = selectedMentorsForQuestion.some(m => m.id === mentorId);
+            
+            if (isSelected) {
+                card.classList.remove('border-slate-700/50');
+                card.classList.add('ring-2', 'ring-sky-400', 'bg-gradient-to-br', 'from-sky-500/10', 'to-purple-500/5');
+                
+                if (!card.querySelector('.selected-indicator')) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'selected-indicator absolute top-3 right-3 w-6 h-6 bg-gradient-to-r from-sky-400 to-sky-500 rounded-full flex items-center justify-center shadow-lg';
+                    indicator.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+                    card.appendChild(indicator);
+                }
+            } else {
+                card.classList.remove('ring-2', 'ring-sky-400', 'bg-gradient-to-br', 'from-sky-500/10', 'to-purple-500/5');
+                card.classList.add('border-slate-700/50');
+                const indicator = card.querySelector('.selected-indicator');
+                if (indicator) indicator.remove();
+            }
+        });
     }
 
     function updateUseQuestionButton() {
         const useBtn = document.getElementById('use-question');
         const infoContainer = document.getElementById('selected-mentor-info');
         
-        if (selectedMentorForQuestion) {
-            useBtn.disabled = false;
-            infoContainer.innerHTML = `
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <span class="text-emerald-400 font-medium">已选择：${selectedMentorForQuestion.name}</span>
-            `;
-            infoContainer.classList.remove('text-slate-400');
-            infoContainer.classList.add('text-emerald-400');
+        if (conversationMode === 'single') {
+            // 单导师模式
+            if (selectedMentorForQuestion) {
+                useBtn.disabled = false;
+                infoContainer.innerHTML = `
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span class="text-emerald-400 font-medium">已选择：${selectedMentorForQuestion.name}</span>
+                `;
+                infoContainer.classList.remove('text-slate-400');
+                infoContainer.classList.add('text-emerald-400');
+            } else {
+                useBtn.disabled = true;
+                infoContainer.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span>请先选择一位导师</span>
+                `;
+                infoContainer.classList.remove('text-emerald-400');
+                infoContainer.classList.add('text-slate-400');
+            }
         } else {
-            useBtn.disabled = true;
-            infoContainer.innerHTML = `
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-                <span>请先选择一位导师</span>
-            `;
-            infoContainer.classList.remove('text-emerald-400');
-            infoContainer.classList.add('text-slate-400');
+            // 多导师模式
+            if (selectedMentorsForQuestion.length > 0) {
+                useBtn.disabled = false;
+                infoContainer.innerHTML = `
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span class="text-emerald-400 font-medium">已选择：${selectedMentorsForQuestion.map(m => m.name).join('、')} (${selectedMentorsForQuestion.length}位导师)</span>
+                `;
+                infoContainer.classList.remove('text-slate-400');
+                infoContainer.classList.add('text-emerald-400');
+            } else {
+                useBtn.disabled = true;
+                infoContainer.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>请选择至少一位导师</span>
+                `;
+                infoContainer.classList.remove('text-emerald-400');
+                infoContainer.classList.add('text-slate-400');
+            }
         }
     }
 
     if (useQuestionBtn) {
         useQuestionBtn.addEventListener('click', function() {
-            if (!selectedMentorForQuestion) {
-                alert("请先选择一位导师！");
-                return;
+            if (conversationMode === 'single') {
+                if (!selectedMentorForQuestion) {
+                    alert("请先选择一位导师！");
+                    return;
+                }
+                
+                const questionTemplate = this.getAttribute('data-question-template');
+                sessionStorage.setItem('selectedQuestion', questionTemplate);
+                sessionStorage.setItem('selectedMentor', selectedMentorForQuestion.id);
+                sessionStorage.setItem('conversationMode', '1v1');
+                
+                // Close modal and redirect to conversation
+                questionModal.classList.replace('flex','hidden');
+                window.location.href = `conversation.html`;
+            } else {
+                if (selectedMentorsForQuestion.length === 0) {
+                    alert("请先选择至少一位导师！");
+                    return;
+                }
+                
+                const questionTemplate = this.getAttribute('data-question-template');
+                sessionStorage.setItem('selectedQuestion', questionTemplate);
+                sessionStorage.setItem('selectedMentors', JSON.stringify(selectedMentorsForQuestion.map(m => m.id)));
+                sessionStorage.setItem('conversationMode', '1vMany');
+                
+                // Close modal and redirect to conversation
+                questionModal.classList.replace('flex','hidden');
+                window.location.href = `conversation.html`;
             }
-            
-            const questionTemplate = this.getAttribute('data-question-template');
-            sessionStorage.setItem('selectedQuestion', questionTemplate);
-            sessionStorage.setItem('selectedMentor', selectedMentorForQuestion.id);
-            
-            // Close modal and redirect to conversation
-            questionModal.classList.replace('flex','hidden');
-            window.location.href = `conversation.html`;
         });
     }
 

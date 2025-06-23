@@ -368,52 +368,13 @@ class ConversationRepository {
                 COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_conversations,
                 COUNT(CASE WHEN status = 'archived' THEN 1 END) as archived_conversations,
                 COUNT(CASE WHEN is_favorite = true THEN 1 END) as favorite_conversations,
-                SUM(message_count) as total_messages,
-                SUM(total_tokens) as total_tokens,
+                COALESCE(SUM(message_count), 0) as total_messages,
+                COALESCE(SUM(total_tokens), 0) as total_tokens,
                 AVG(satisfaction_rating) as avg_satisfaction_rating,
                 MIN(created_at) as first_conversation_date,
-                MAX(last_activity_at) as last_activity_date,
-                
-                -- 按导师统计
-                jsonb_object_agg(
-                    primary_mentor_id, 
-                    jsonb_build_object(
-                        'count', mentor_stats.conversation_count,
-                        'messages', mentor_stats.total_messages,
-                        'name', primary_mentor_name
-                    )
-                ) FILTER (WHERE mentor_stats.conversation_count > 0) as mentor_stats,
-                
-                -- 月度统计
-                array_agg(
-                    jsonb_build_object(
-                        'month', monthly_stats.month,
-                        'conversations', monthly_stats.conversation_count,
-                        'messages', monthly_stats.message_count
-                    ) ORDER BY monthly_stats.month DESC
-                ) FILTER (WHERE monthly_stats.conversation_count > 0) as monthly_stats
-                
-            FROM conversations c
-            LEFT JOIN (
-                SELECT 
-                    primary_mentor_id,
-                    primary_mentor_name,
-                    COUNT(*) as conversation_count,
-                    SUM(message_count) as total_messages
-                FROM conversations 
-                WHERE user_id = $1 AND deleted_at IS NULL
-                GROUP BY primary_mentor_id, primary_mentor_name
-            ) mentor_stats ON c.primary_mentor_id = mentor_stats.primary_mentor_id
-            LEFT JOIN (
-                SELECT 
-                    DATE_TRUNC('month', created_at) as month,
-                    COUNT(*) as conversation_count,
-                    SUM(message_count) as message_count
-                FROM conversations 
-                WHERE user_id = $1 AND deleted_at IS NULL
-                GROUP BY DATE_TRUNC('month', created_at)
-            ) monthly_stats ON DATE_TRUNC('month', c.created_at) = monthly_stats.month
-            WHERE c.user_id = $1 AND c.deleted_at IS NULL
+                MAX(last_activity_at) as last_activity_date
+            FROM conversations 
+            WHERE user_id = $1 AND deleted_at IS NULL
         `;
 
         try {
@@ -422,18 +383,18 @@ class ConversationRepository {
             
             // 处理空值和格式化
             return {
-                totalConversations: parseInt(stats.total_conversations) || 0,
-                activeConversations: parseInt(stats.active_conversations) || 0,
-                completedConversations: parseInt(stats.completed_conversations) || 0,
-                archivedConversations: parseInt(stats.archived_conversations) || 0,
-                favoriteConversations: parseInt(stats.favorite_conversations) || 0,
-                totalMessages: parseInt(stats.total_messages) || 0,
-                totalTokens: parseInt(stats.total_tokens) || 0,
-                avgSatisfactionRating: parseFloat(stats.avg_satisfaction_rating) || null,
-                firstConversationDate: stats.first_conversation_date,
-                lastActivityDate: stats.last_activity_date,
-                mentorStats: stats.mentor_stats || {},
-                monthlyStats: stats.monthly_stats || []
+                basicStats: {
+                    total_conversations: parseInt(stats.total_conversations) || 0,
+                    active_conversations: parseInt(stats.active_conversations) || 0,
+                    completed_conversations: parseInt(stats.completed_conversations) || 0,
+                    archived_conversations: parseInt(stats.archived_conversations) || 0,
+                    favorite_conversations: parseInt(stats.favorite_conversations) || 0,
+                    total_messages: parseInt(stats.total_messages) || 0,
+                    total_tokens: parseInt(stats.total_tokens) || 0,
+                    avg_satisfaction_rating: parseFloat(stats.avg_satisfaction_rating) || null,
+                    first_conversation_date: stats.first_conversation_date,
+                    last_activity_date: stats.last_activity_date
+                }
             };
 
         } catch (error) {

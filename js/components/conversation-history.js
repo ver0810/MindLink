@@ -281,14 +281,21 @@ class ConversationHistory {
         card.className = 'bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-primary transition-colors cursor-pointer';
         card.setAttribute('data-conversation-id', conversation.id);
 
-        const createdAt = new Date(conversation.created_at).toLocaleString('zh-CN');
-        const updatedAt = new Date(conversation.updated_at).toLocaleString('zh-CN');
+        const createdAt = new Date(conversation.createdAt || conversation.created_at).toLocaleString('zh-CN');
+        const updatedAt = new Date(conversation.updatedAt || conversation.updated_at || conversation.createdAt || conversation.created_at).toLocaleString('zh-CN');
+        
+        // 获取分析数据
+        const summary = conversation.summary || conversation.aiSummary;
+        const problemCategories = conversation.problemCategories || conversation.problem_categories || [];
+        const keyTopics = conversation.keyTopics || conversation.key_topics || [];
+        const autoTags = conversation.autoTags || conversation.auto_tags || [];
+        const complexityLevel = conversation.complexityLevel || conversation.complexity_level || 1;
         
         card.innerHTML = `
             <div class="flex items-start justify-between mb-4">
                 <div class="flex-1">
                     <h3 class="text-lg font-semibold text-white mb-2">${this.escapeHtml(conversation.title)}</h3>
-                    <div class="flex items-center space-x-4 text-sm text-gray-400">
+                    <div class="flex items-center space-x-4 text-sm text-gray-400 mb-3">
                         <span class="flex items-center">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
@@ -299,10 +306,74 @@ class ConversationHistory {
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
                             </svg>
-                            ${conversation.actual_message_count || 0} 条消息
+                            ${conversation.messageCount || conversation.message_count || 0} 条消息
                         </span>
                         <span>更新于 ${updatedAt}</span>
                     </div>
+                    
+                    <!-- AI总结显示 -->
+                    ${summary ? `
+                        <div class="bg-gray-700/50 rounded-md p-3 mb-3">
+                            <div class="flex items-center mb-1">
+                                <svg class="w-3 h-3 mr-1 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-xs text-blue-400 font-medium">AI总结</span>
+                            </div>
+                            <p class="text-gray-200 text-sm leading-relaxed">${this.escapeHtml(summary)}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- 标签显示 -->
+                    ${(problemCategories.length > 0 || keyTopics.length > 0 || autoTags.length > 0) ? `
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${problemCategories.slice(0, 3).map(category => 
+                                `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    ${this.formatTagName(category)}
+                                </span>`
+                            ).join('')}
+                            ${keyTopics.slice(0, 2).map(topic => 
+                                `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M7 7a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V7zM9 9a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V9z"/>
+                                    </svg>
+                                    ${this.escapeHtml(topic)}
+                                </span>`
+                            ).join('')}
+                            ${autoTags.slice(0, 2).map(tag => 
+                                `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                                    </svg>
+                                    ${this.formatTagName(tag)}
+                                </span>`
+                            ).join('')}
+                            ${(problemCategories.length + keyTopics.length + autoTags.length > 7) ? 
+                                `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
+                                    +${problemCategories.length + keyTopics.length + autoTags.length - 7}个标签
+                                </span>` : ''
+                            }
+                        </div>
+                    ` : ''}
+                    
+                    <!-- 复杂度指示器 -->
+                    ${complexityLevel > 1 ? `
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xs text-gray-400">复杂度:</span>
+                            <div class="flex space-x-1">
+                                ${Array.from({length: 5}, (_, i) => {
+                                    const isActive = i < complexityLevel;
+                                    const color = this.getComplexityColor(i + 1, complexityLevel);
+                                    return `<div class="w-2 h-2 rounded-full ${isActive ? 'opacity-100' : 'opacity-30'}" 
+                                                 style="background-color: ${color}"></div>`;
+                                }).join('')}
+                            </div>
+                            <span class="text-xs text-gray-400">${this.getComplexityLabel(complexityLevel)}</span>
+                        </div>
+                    ` : ''}
                 </div>
                 <div class="flex items-center space-x-2">
                     ${conversation.is_favorite ? '<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>' : ''}
@@ -318,6 +389,12 @@ class ConversationHistory {
                             data-conversation-id="${conversation.id}">
                         查看详情
                     </button>
+                    ${!summary && conversation.messageCount >= 3 ? `
+                        <button class="analyze-conversation bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm font-medium" 
+                                data-conversation-id="${conversation.id}">
+                            一键分析
+                        </button>
+                    ` : ''}
                     <button class="favorite-conversation ${conversation.is_favorite ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 hover:bg-gray-500'} text-white px-3 py-1 rounded text-sm font-medium" 
                             data-conversation-id="${conversation.id}" data-is-favorite="${conversation.is_favorite}">
                         ${conversation.is_favorite ? '取消收藏' : '收藏'}
@@ -335,6 +412,14 @@ class ConversationHistory {
             e.stopPropagation();
             this.viewConversation(conversation.id);
         });
+
+        const analyzeBtn = card.querySelector('.analyze-conversation');
+        if (analyzeBtn) {
+            analyzeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.analyzeConversation(conversation.id);
+            });
+        }
 
         card.querySelector('.favorite-conversation').addEventListener('click', (e) => {
             e.stopPropagation();
@@ -386,16 +471,147 @@ class ConversationHistory {
 
         title.textContent = conversation.title;
 
+        // 获取分析数据
+        const summary = conversation.summary || conversation.aiSummary;
+        const problemCategories = conversation.problemCategories || conversation.problem_categories || [];
+        const keyTopics = conversation.keyTopics || conversation.key_topics || [];
+        const autoTags = conversation.autoTags || conversation.auto_tags || [];
+        const complexityLevel = conversation.complexityLevel || conversation.complexity_level || 1;
+        const keyInsights = conversation.keyInsights || conversation.key_insights || [];
+        const suggestedActions = conversation.suggestedActions || conversation.suggested_actions || [];
+
         // 渲染对话消息
         content.innerHTML = `
             <div class="mb-6">
                 <div class="flex items-center space-x-4 text-sm text-gray-400 mb-4">
-                    <span>导师: ${this.escapeHtml(conversation.mentor_name)}</span>
-                    <span>创建时间: ${new Date(conversation.created_at).toLocaleString('zh-CN')}</span>
+                    <span>导师: ${this.escapeHtml(conversation.mentorName || conversation.mentor_name)}</span>
+                    <span>创建时间: ${new Date(conversation.createdAt || conversation.created_at).toLocaleString('zh-CN')}</span>
                     <span>消息数: ${conversation.messages ? conversation.messages.length : 0}</span>
                 </div>
+                
+                <!-- 对话分析面板 -->
+                ${(summary || problemCategories.length > 0 || keyTopics.length > 0) ? `
+                    <div class="bg-gray-700/30 rounded-lg p-4 mb-4 border border-gray-600">
+                        <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            对话分析
+                        </h4>
+                        
+                        <!-- AI总结 -->
+                        ${summary ? `
+                            <div class="mb-4">
+                                <h5 class="text-xs font-medium text-gray-400 mb-2">总结</h5>
+                                <p class="text-gray-200 text-sm leading-relaxed bg-gray-800/50 rounded-md p-3">${this.escapeHtml(summary)}</p>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- 问题类型 -->
+                        ${problemCategories.length > 0 ? `
+                            <div class="mb-4">
+                                <h5 class="text-xs font-medium text-gray-400 mb-2">问题类型</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    ${problemCategories.map(category => 
+                                        `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30">
+                                            ${this.formatTagName(category)}
+                                        </span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- 关键话题 -->
+                        ${keyTopics.length > 0 ? `
+                            <div class="mb-4">
+                                <h5 class="text-xs font-medium text-gray-400 mb-2">关键话题</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    ${keyTopics.map(topic => 
+                                        `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                            ${this.escapeHtml(topic)}
+                                        </span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- 自动标签 -->
+                        ${autoTags.length > 0 ? `
+                            <div class="mb-4">
+                                <h5 class="text-xs font-medium text-gray-400 mb-2">智能标签</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    ${autoTags.map(tag => 
+                                        `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                            ${this.formatTagName(tag)}
+                                        </span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- 复杂度 -->
+                        ${complexityLevel > 1 ? `
+                            <div class="mb-4">
+                                <h5 class="text-xs font-medium text-gray-400 mb-2">复杂度等级</h5>
+                                <div class="flex items-center space-x-2">
+                                    <div class="flex space-x-1">
+                                        ${Array.from({length: 5}, (_, i) => {
+                                            const isActive = i < complexityLevel;
+                                            const color = this.getComplexityColor(i + 1, complexityLevel);
+                                            return `<div class="w-3 h-3 rounded-full ${isActive ? 'opacity-100' : 'opacity-30'}" 
+                                                         style="background-color: ${color}"></div>`;
+                                        }).join('')}
+                                    </div>
+                                    <span class="text-xs text-gray-300">${this.getComplexityLabel(complexityLevel)}</span>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- 关键洞察 -->
+                        ${keyInsights.length > 0 ? `
+                            <div class="mb-4">
+                                <h5 class="text-xs font-medium text-gray-400 mb-2">关键洞察</h5>
+                                <ul class="text-sm text-gray-300 space-y-1">
+                                    ${keyInsights.map(insight => 
+                                        `<li class="flex items-start">
+                                            <svg class="w-3 h-3 mr-2 mt-0.5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                            </svg>
+                                            ${this.escapeHtml(insight)}
+                                        </li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- 建议行动 -->
+                        ${suggestedActions.length > 0 ? `
+                            <div>
+                                <h5 class="text-xs font-medium text-gray-400 mb-2">建议行动</h5>
+                                <ul class="text-sm text-gray-300 space-y-1">
+                                    ${suggestedActions.map(action => 
+                                        `<li class="flex items-start">
+                                            <svg class="w-3 h-3 mr-2 mt-0.5 text-yellow-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                            </svg>
+                                            ${this.escapeHtml(action)}
+                                        </li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
             </div>
+            
+            <!-- 对话消息 -->
             <div class="space-y-4 max-h-96 overflow-y-auto">
+                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center border-t border-gray-600 pt-3">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/>
+                    </svg>
+                    对话记录
+                </h4>
                 ${conversation.messages ? conversation.messages.map(message => this.renderMessage(message)).join('') : '<p class="text-gray-400">暂无消息</p>'}
             </div>
         `;
@@ -428,7 +644,7 @@ class ConversationHistory {
      */
     renderMessage(message) {
         const isUser = message.role === 'user';
-        const time = new Date(message.created_at).toLocaleString('zh-CN');
+        const time = new Date(message.createdAt || message.created_at).toLocaleString('zh-CN');
         
         return `
             <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
@@ -446,6 +662,55 @@ class ConversationHistory {
     closeModal() {
         const modal = document.getElementById('conversation-modal');
         modal.classList.add('hidden');
+    }
+
+    /**
+     * 分析对话
+     */
+    async analyzeConversation(conversationId) {
+        try {
+            // 找到对应的按钮并显示加载状态
+            const analyzeBtn = document.querySelector(`[data-conversation-id="${conversationId}"].analyze-conversation`);
+            if (analyzeBtn) {
+                const originalText = analyzeBtn.textContent;
+                analyzeBtn.textContent = '分析中...';
+                analyzeBtn.disabled = true;
+            }
+
+            // 调用分析API
+            const response = await fetch(`http://localhost:3000/api/conversation-analysis/${conversationId}/analyze`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('分析请求失败');
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showSuccess('对话分析完成！');
+                // 重新加载对话列表以显示分析结果
+                await this.loadConversations(false);
+            } else {
+                throw new Error(result.message || '分析失败');
+            }
+
+        } catch (error) {
+            console.error('分析对话失败:', error);
+            this.showError('分析失败: ' + error.message);
+            
+            // 恢复按钮状态
+            const analyzeBtn = document.querySelector(`[data-conversation-id="${conversationId}"].analyze-conversation`);
+            if (analyzeBtn) {
+                analyzeBtn.textContent = '一键分析';
+                analyzeBtn.disabled = false;
+            }
+        }
     }
 
     /**
@@ -715,6 +980,56 @@ ${conversation.messages ? conversation.messages.map(message => {
             "'": '&#039;'
         };
         return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    /**
+     * 格式化标签名称
+     */
+    formatTagName(tagName) {
+        if (!tagName) return '';
+        
+        // 处理下划线分隔的标签名
+        const formatted = tagName.replace(/_/g, ' ');
+        
+        // 处理特殊标签名映射
+        const tagMappings = {
+            'business_strategy': '商业策略',
+            'investment_advice': '投资建议',
+            'career_development': '职业发展',
+            'leadership_management': '领导管理',
+            'technology_innovation': '技术创新',
+            'market_analysis': '市场分析',
+            'personal_growth': '个人成长',
+            'financial_planning': '财务规划',
+            'sentiment_positive': '积极正面',
+            'sentiment_neutral': '中性客观',
+            'sentiment_concerned': '关注担忧',
+            'complexity_basic': '基础问题',
+            'complexity_intermediate': '中等复杂',
+            'complexity_advanced': '高度复杂'
+        };
+        
+        return tagMappings[tagName] || formatted.replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    /**
+     * 获取复杂度标签
+     */
+    getComplexityLabel(level) {
+        const labels = ['', '简单', '简单', '中等', '复杂', '非常复杂'];
+        return labels[level] || '未知';
+    }
+
+    /**
+     * 获取复杂度颜色
+     */
+    getComplexityColor(index, currentLevel) {
+        if (index <= currentLevel) {
+            if (index <= 2) return '#10B981'; // 绿色
+            if (index <= 3) return '#F59E0B'; // 黄色
+            return '#EF4444'; // 红色
+        }
+        return '#6B7280'; // 灰色
     }
 
     showElement(elementId) {

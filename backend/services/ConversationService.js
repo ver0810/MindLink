@@ -12,21 +12,21 @@
 const { v4: uuidv4 } = require('uuid');
 const ConversationRepository = require('../repositories/ConversationRepository');
 const MessageRepository = require('../repositories/MessageRepository');
-const CacheService = require('./CacheService');
-const EventService = require('./EventService');
-const SearchService = require('./SearchService');
-const ValidationService = require('./ValidationService');
-const AnalyticsService = require('./AnalyticsService');
+const { getInstance: getCacheService } = require('./CacheService');
+const { getInstance: getEventService } = require('./EventService');
+const { getInstance: getSearchService } = require('./SearchService');
+const { getInstance: getValidationService } = require('./ValidationService');
+const { getInstance: getAnalyticsService } = require('./AnalyticsService');
 
 class ConversationService {
     constructor() {
         this.conversationRepo = new ConversationRepository();
         this.messageRepo = new MessageRepository();
-        this.cache = new CacheService();
-        this.events = new EventService();
-        this.search = new SearchService();
-        this.validation = new ValidationService();
-        this.analytics = new AnalyticsService();
+        this.cache = getCacheService();
+        this.events = getEventService();
+        this.search = getSearchService();
+        this.validation = getValidationService();
+        this.analytics = getAnalyticsService();
     }
 
     /**
@@ -569,6 +569,9 @@ class ConversationService {
             // 分析消息内容
             await this.analytics.analyzeMessage(message);
             
+            // 移除自动分析触发 - 改为实时标签生成
+            // await this.checkAndTriggerConversationAnalysis(message.conversation_id);
+            
             // 其他异步处理...
         } catch (error) {
             console.error('异步处理消息失败:', error);
@@ -597,7 +600,44 @@ class ConversationService {
             createdAt: conversation.created_at,
             updatedAt: conversation.updated_at,
             tags: conversation.tags || [],
-            metadata: this.safeParseJSON(conversation.metadata, {})
+            metadata: this.safeParseJSON(conversation.metadata, {}),
+            
+            // 新增分析相关字段
+            summary: conversation.summary,
+            keyTopics: conversation.key_topics || [],
+            problemCategories: conversation.problem_categories || [],
+            autoTags: conversation.auto_tags || [],
+            insights: this.safeParseJSON(conversation.insights, {}),
+            sentimentAnalysis: this.safeParseJSON(conversation.sentiment_analysis, {}),
+            complexityLevel: conversation.complexity_level,
+            summaryGeneratedAt: conversation.summary_generated_at,
+            tagsGeneratedAt: conversation.tags_generated_at,
+            
+            // AI分析结果（如果有）
+            aiSummary: conversation.ai_summary,
+            keyInsights: conversation.key_insights || [],
+            mainTopics: conversation.main_topics || [],
+            problemTypes: conversation.problem_types || [],
+            suggestedActions: conversation.suggested_actions || [],
+            sentimentScore: conversation.sentiment_score,
+            complexityScore: conversation.complexity_score,
+            engagementScore: conversation.engagement_score,
+            analysisCreatedAt: conversation.analysis_created_at,
+            
+            // 兼容字段（下划线命名）
+            message_count: conversation.message_count,
+            primary_mentor_name: conversation.primary_mentor_name,
+            mentor_name: conversation.primary_mentor_name,
+            last_message_at: conversation.last_message_at,
+            last_activity_at: conversation.last_activity_at,
+            created_at: conversation.created_at,
+            updated_at: conversation.updated_at,
+            is_favorite: conversation.is_favorite,
+            is_pinned: conversation.is_pinned,
+            key_topics: conversation.key_topics || [],
+            problem_categories: conversation.problem_categories || [],
+            auto_tags: conversation.auto_tags || [],
+            complexity_level: conversation.complexity_level
         };
     }
 
@@ -626,7 +666,15 @@ class ConversationService {
             attachments: this.safeParseJSON(message.attachments, []),
             metadata: this.safeParseJSON(message.metadata, {}),
             createdAt: message.created_at,
-            isEdited: message.is_edited
+            isEdited: message.is_edited,
+            
+            // 兼容字段（下划线命名）
+            content_type: message.content_type,
+            message_order: message.message_order,
+            mentor_id: message.mentor_id,
+            mentor_name: message.mentor_name,
+            created_at: message.created_at,
+            is_edited: message.is_edited
         };
     }
 
