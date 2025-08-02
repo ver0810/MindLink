@@ -15,13 +15,14 @@
 const CONFIG = {
     // API 配置
     API: {
-        // URL: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
-        // MODEL: 'deepseek-v3-250324',
-        URL: 'https://api.siliconflow.cn/v1/chat/completions',
-        MODEL: 'Pro/deepseek-ai/DeepSeek-V3',
+        URL: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+        MODEL: 'deepseek-v3-250324',
+        // URL: 'https://api.siliconflow.cn/v1/chat/completions',
+        // MODEL: 'Pro/deepseek-ai/DeepSeek-V3',
         // 写死的API KEY用于GitHub Pages部署
         // 🔥 请将下面的值替换为您的实际SiliconFlow API密钥
-        API_KEY: 'sk-tadwvjacxxdddynmbevczahgiruvpximvvgblwrxeutqqity', // 请替换为您的实际API密钥
+        API_KEY: 'c116dc77-7796-490c-b86e-fce6d42793d9',
+        // API_KEY: 'sk-jryyuravuqhgzkvshdwgftantltjljaanlqcxhpnxzhxybwe', // 请替换为您的实际API密钥
         MAX_TOKENS: 1000,
         TEMPERATURE: 0.7,
         TIMEOUT: 30000 // 30秒超时
