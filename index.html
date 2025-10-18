@@ -1,48 +1,59 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FounderMind - 跳转中...</title>
-    <meta http-equiv="refresh" content="0; url=pages/index.html">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MindLink - 跳转中...</title>
+    <meta http-equiv="refresh" content="0; url=pages/index.html" />
     <script>
-        // 立即跳转到 pages/index.html
-        window.location.replace('pages/index.html');
+      // 立即跳转到 pages/index.html
+      window.location.replace("pages/index.html");
     </script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+      }
+      .loading {
+        text-align: center;
+      }
+      .spinner {
+        border: 4px solid #334155;
+        border-top: 4px solid #0ea5e9;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
-        .loading {
-            text-align: center;
+        100% {
+          transform: rotate(360deg);
         }
-        .spinner {
-            border: 4px solid #334155;
-            border-top: 4px solid #0ea5e9;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="loading">
-        <div class="spinner"></div>
-        <h2>正在跳转到 FounderMind...</h2>
-        <p>如果页面没有自动跳转，请<a href="pages/index.html" style="color: #0ea5e9;">点击这里</a></p>
+      <div class="spinner"></div>
+      <h2>正在跳转到 MindLink...</h2>
+      <p>
+        如果页面没有自动跳转，请<a
+          href="pages/index.html"
+          style="color: #0ea5e9"
+          >点击这里</a
+        >
+      </p>
     </div>
-</body>
-</html> 
+  </body>
+</html>

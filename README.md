@@ -1,16 +1,16 @@
-# FounderMind Platform 🧠
+# MindLink Platform 🧠
 
-一个创新的AI导师咨询平台，为创业者提供个性化的商业指导和智慧洞见。现已集成**OpenAI API多轮对话功能**和**完整的后端服务**！
+一个创新的AI学习导师平台，为学习者提供个性化的学习指导和智慧洞见。现已集成**OpenAI API多轮对话功能**和**完整的后端服务**！
 
 ## 🌐 在线体验
 
-**🚀 立即访问**: [https://yangyuxin-hub.github.io/foundermind-platform/](https://yangyuxin-hub.github.io/foundermind-platform/)
+**🚀 立即访问**: [https://yangyuxin-hub.github.io/mindlink-platform/](https://yangyuxin-hub.github.io/mindlink-platform/)
 
 ## ✨ 功能特色
 
 ### 🎯 智慧导师系统
-- **多位知名导师**：沃伦·巴菲特、李嘉诚、马云、Sam Altman等
-- **专业领域覆盖**：投资、商业管理、科技创新、产品设计等
+- **多位知名导师**：让·皮亚杰、约翰·杜威、赫尔曼·艾宾浩斯、埃隆·马斯克等
+- **专业领域覆盖**：认知发展、反思学习、记忆科学、学习动机等
 - **个性化回答**：基于每位导师的专业背景和思维方式
 
 ### 💬 多模式对话
@@ -64,7 +64,7 @@
 ## 📁 项目结构
 
 ```
-foundermind-platform/
+mindlink-platform/
 ├── 📄 前端页面
 │   ├── index.html                      # 首页
 │   ├── pages/
@@ -161,8 +161,8 @@ foundermind-platform/
 
 **克隆项目**
 ```bash
-git clone https://github.com/yangyuxin-hub/foundermind-platform.git
-cd foundermind-platform
+git clone https://github.com/yangyuxin-hub/mindlink-platform.git
+cd mindlink-platform
 ```
 
 **安装后端依赖**
@@ -360,7 +360,7 @@ const config = {
 ```javascript
 const CONFIG = {
     API_URL: 'https://api.openai.com/v1/chat/completions',
-    MODEL: 'gpt-3.5-turbo', // 可选: gpt-4, gpt-4-turbo-preview
+    MODEL: 'deepseek-v3', // 可选: gpt-4, gpt-4-turbo-preview
     MAX_TOKENS: 1000,
     TEMPERATURE: 0.7,
     BACKEND_URL: 'http://localhost:3000', // 后端服务地址
@@ -493,7 +493,7 @@ A: 使用PowerShell运行`.\api-test-suite.ps1`，会自动测试所有API接口
 A: 登录后访问"对话历史"页面，支持搜索、筛选和导出功能。
 
 **Q: 支持哪些AI模型？**
-A: 目前主要支持OpenAI的GPT-3.5和GPT-4模型，未来会支持更多模型。
+A: 目前主要支持OpenAI的GPT-3.5、GPT-4和DeepSeek V3模型，未来会支持更多模型。
 
 **Q: 如何备份数据？**
 A: 可以通过数据库管理页面导出数据，或直接备份PostgreSQL数据库文件。 

@@ -1,197 +1,435 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FounderMind - AI私董会</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MindLink - AI学习导师平台</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'slate-850': '#151d2e', // Custom dark color for sidebars/backgrounds
-                    },
-                    boxShadow: {
-                        'glow-sky': '0 0 15px rgba(56, 189, 248, 0.3), 0 0 25px rgba(56, 189, 248, 0.2)',
-                        'glow-purple': '0 0 15px rgba(168, 85, 247, 0.3), 0 0 25px rgba(168, 85, 247, 0.2)',
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "slate-850": "#151d2e", // Custom dark color for sidebars/backgrounds
+            },
+            boxShadow: {
+              "glow-sky":
+                "0 0 15px rgba(56, 189, 248, 0.3), 0 0 25px rgba(56, 189, 248, 0.2)",
+              "glow-purple":
+                "0 0 15px rgba(168, 85, 247, 0.3), 0 0 25px rgba(168, 85, 247, 0.2)",
+            },
+          },
+        },
+      };
     </script>
     <script src="../js/core/auth.js" defer></script>
     <script src="../js/core/form-validation.js" defer></script>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
-</head>
-<body class="bg-gradient-to-br from-slate-900 to-slate-850 text-slate-200 min-h-screen">
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>"
+    />
+  </head>
+  <body
+    class="bg-gradient-to-br from-slate-900 to-slate-850 text-slate-200 min-h-screen"
+  >
     <div class="flex flex-col min-h-screen">
-        <!-- Header -->
-        <header class="bg-slate-800/80 backdrop-blur-md shadow-lg sticky top-0 z-30 border-b border-slate-700">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl mr-3 shadow-md">F</div>
-                    <h1 class="text-2xl font-bold text-logo-gradient">FounderMind</h1>
-                </div>
-                <nav class="hidden md:flex space-x-8">
-                    <a href="index.html#features" class="text-slate-300 hover:text-sky-400 transition-colors">核心功能</a>
-                    <a href="index.html#mentors-preview" class="text-slate-300 hover:text-sky-400 transition-colors">导师阵容</a>
-                    <a href="index.html#pricing" class="text-slate-300 hover:text-sky-400 transition-colors">订阅方案</a>
-                    <!-- 用户登录后显示的导航 -->
-                    <div id="user-nav-links" class="hidden space-x-8">
-                        <a href="conversation-setup.html" class="text-slate-300 hover:text-sky-400 transition-colors">开始对话</a>
-                        <a href="conversation-history.html" class="text-slate-300 hover:text-sky-400 transition-colors">历史对话</a>
-                        <a href="dashboard.html" class="text-slate-300 hover:text-sky-400 transition-colors">仪表板</a>
-                    </div>
-                </nav>
-                <div class="hidden md:flex items-center space-x-4">
-                    <!-- 用户信息 -->
-                    <div id="user-menu" class="hidden items-center space-x-3">
-                        <span id="user-display" class="text-slate-300 text-sm"></span>
-                        <button id="logout-btn" class="px-4 py-2 text-sm bg-red-600 text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
-                            退出登录
-                        </button>
-                    </div>
-                    <!-- 登录按钮 -->
-                    <button id="login-btn-header" class="px-5 py-2 text-sm bg-slate-700 text-slate-200 font-medium rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors">
-                        登录
-                    </button>
-                </div>
-                <div class="md:hidden">
-                    <button id="mobile-nav-toggle" class="text-slate-300 hover:text-sky-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                    </button>
-                </div>
+      <!-- Header -->
+      <header
+        class="bg-slate-800/80 backdrop-blur-md shadow-lg sticky top-0 z-30 border-b border-slate-700"
+      >
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center"
+        >
+          <div class="flex items-center">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-sky-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl mr-3 shadow-md"
+            >
+              F
             </div>
-             <!-- Mobile Nav -->
-            <div id="mobile-nav" class="md:hidden hidden bg-slate-800 border-t border-slate-700 py-2">
-                <a href="index.html#features" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">核心功能</a>
-                <a href="index.html#mentors-preview" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">导师阵容</a>
-                <a href="index.html#pricing" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">订阅方案</a>
-                <!-- 用户登录后显示的移动端导航 -->
-                <div id="mobile-user-nav" class="hidden border-t border-slate-600 pt-2 mt-2">
-                    <a href="conversation-setup.html" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">开始对话</a>
-                    <a href="conversation-history.html" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">历史对话</a>
-                    <a href="dashboard.html" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">仪表板</a>
-                    <div class="px-4 py-2 text-slate-400 border-t border-slate-600 mt-2">
-                        <span id="mobile-user-display" class="text-sm"></span>
-                        <button id="mobile-logout-btn" class="block mt-2 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700">退出登录</button>
-                    </div>
-                </div>
-                <button id="login-btn-mobile" class="block w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400">登录</button>
+            <h1 class="text-2xl font-bold text-logo-gradient">MindLink</h1>
+          </div>
+          <nav class="hidden md:flex space-x-8">
+            <a
+              href="index.html#features"
+              class="text-slate-300 hover:text-sky-400 transition-colors"
+              >核心功能</a
+            >
+            <a
+              href="index.html#mentors-preview"
+              class="text-slate-300 hover:text-sky-400 transition-colors"
+              >导师阵容</a
+            >
+            <a
+              href="index.html#pricing"
+              class="text-slate-300 hover:text-sky-400 transition-colors"
+              >订阅方案</a
+            >
+            <!-- 用户登录后显示的导航 -->
+            <div id="user-nav-links" class="hidden space-x-8">
+              <a
+                href="conversation-setup.html"
+                class="text-slate-300 hover:text-sky-400 transition-colors"
+                >开始对话</a
+              >
+              <a
+                href="conversation-history.html"
+                class="text-slate-300 hover:text-sky-400 transition-colors"
+                >历史对话</a
+              >
+              <a
+                href="dashboard.html"
+                class="text-slate-300 hover:text-sky-400 transition-colors"
+                >仪表板</a
+              >
             </div>
-        </header>
-
-        <!-- Hero Section -->
-        <section class="py-20 md:py-32 px-4 relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10 -z-10">
-                <!-- Decorative background pattern or image -->
-                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="hero-pattern" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(45)"><rect width="1" height="40" fill="rgba(56,189,248,0.2)"/><rect height="1" width="40" fill="rgba(168,85,247,0.2)"/></pattern></defs><rect width="100%" height="100%" fill="url(#hero-pattern)"/></svg>
+          </nav>
+          <div class="hidden md:flex items-center space-x-4">
+            <!-- 用户信息 -->
+            <div id="user-menu" class="hidden items-center space-x-3">
+              <span id="user-display" class="text-slate-300 text-sm"></span>
+              <button
+                id="logout-btn"
+                class="px-4 py-2 text-sm bg-red-600 text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+              >
+                退出登录
+              </button>
             </div>
-            <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-                <div class="z-10">
-                    <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-50 leading-tight mb-6">
-                        与<span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-purple-500">世界顶尖智慧</span>对话，
-                        <br>驱动您的创业成功之路
-                    </h2>
-                    <p class="mt-6 text-lg text-slate-300 max-w-xl">
-                        FounderMind 让您随时与全球最具影响力的企业家、投资人和思想家进行 AI 模拟一对一或一对多的交流，获取关键决策建议和战略指导。
-                    </p>
-                    <div class="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                        <button id="register-btn" class="btn-primary shadow-glow-sky">
-                            立即注册，开启智慧之旅
-                        </button>
-                        <button id="guest-explore-btn" class="btn-outline">
-                            访客体验
-                        </button>
-                    </div>
-                </div>
-                <div class="relative h-80 md:h-[28rem] rounded-xl overflow-hidden cool-card shadow-2xl shadow-purple-500/20 group">
-                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YnVzaW5lc3MlMjBtZWV0aW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60" alt="AI Mentor Conversation" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-800/80 to-transparent"></div>
-                    <div class="absolute inset-0 flex items-center justify-center flex-col text-white p-8">
-                        <div class="w-24 h-24 bg-gradient-to-br from-sky-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-xl">
-                            <span class="text-white font-bold text-5xl">F</span>
-                        </div>
-                        <h3 class="text-2xl md:text-3xl font-bold mb-3 text-slate-50">AI私董会</h3>
-                        <p class="text-center text-slate-300">让全球顶尖商业智慧为您的创业旅程保驾护航</p>
-                    </div>
-                </div>
+            <!-- 登录按钮 -->
+            <button
+              id="login-btn-header"
+              class="px-5 py-2 text-sm bg-slate-700 text-slate-200 font-medium rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
+            >
+              登录
+            </button>
+          </div>
+          <div class="md:hidden">
+            <button
+              id="mobile-nav-toggle"
+              class="text-slate-300 hover:text-sky-400"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Mobile Nav -->
+        <div
+          id="mobile-nav"
+          class="md:hidden hidden bg-slate-800 border-t border-slate-700 py-2"
+        >
+          <a
+            href="index.html#features"
+            class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400"
+            >核心功能</a
+          >
+          <a
+            href="index.html#mentors-preview"
+            class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400"
+            >导师阵容</a
+          >
+          <a
+            href="index.html#pricing"
+            class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400"
+            >订阅方案</a
+          >
+          <!-- 用户登录后显示的移动端导航 -->
+          <div
+            id="mobile-user-nav"
+            class="hidden border-t border-slate-600 pt-2 mt-2"
+          >
+            <a
+              href="conversation-setup.html"
+              class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400"
+              >开始对话</a
+            >
+            <a
+              href="conversation-history.html"
+              class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400"
+              >历史对话</a
+            >
+            <a
+              href="dashboard.html"
+              class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400"
+              >仪表板</a
+            >
+            <div
+              class="px-4 py-2 text-slate-400 border-t border-slate-600 mt-2"
+            >
+              <span id="mobile-user-display" class="text-sm"></span>
+              <button
+                id="mobile-logout-btn"
+                class="block mt-2 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+              >
+                退出登录
+              </button>
             </div>
-        </section>
+          </div>
+          <button
+            id="login-btn-mobile"
+            class="block w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-sky-400"
+          >
+            登录
+          </button>
+        </div>
+      </header>
 
-        <!-- Features Section -->
-        <section id="features" class="py-16 md:py-24 bg-slate-850">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-4">专为创业者打造的<span class="text-logo-gradient">智慧引擎</span></h2>
-                <p class="text-center text-slate-400 mb-16 max-w-2xl mx-auto">我们融合前沿AI技术与顶尖商业智慧，助您洞察先机，从容决策。</p>
-
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="cool-card cool-card-hover p-8 text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-sky-500 to-sky-600 rounded-xl flex items-center justify-center mb-6 mx-auto shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-slate-100 mb-3">全球顶尖导师 AI 模拟</h3>
-                        <p class="text-slate-400">与沃伦·巴菲特、马云等商业巨擘的 AI 进行一对一深度交流，获取基于他们智慧的个性化建议。</p>
-                    </div>
-
-                    <div class="cool-card cool-card-hover p-8 text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 mx-auto shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-slate-100 mb-3">结构化提问引导</h3>
-                        <p class="text-slate-400">专业的问题框架和引导系统，助您构思和提出有价值的问题，最大化从 AI 导师处获取的洞见。</p>
-                    </div>
-
-                    <div class="cool-card cool-card-hover p-8 text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 mx-auto shadow-lg">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-slate-100 mb-3">实时智能反馈</h3>
-                        <p class="text-slate-400">获取针对您特定业务场景的实用建议，不仅是理论指导，更有基于导师智慧风格的可行性方案思考。</p>
-                    </div>
-                </div>
+      <!-- Hero Section -->
+      <section class="py-20 md:py-32 px-4 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 -z-10">
+          <!-- Decorative background pattern or image -->
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern
+                id="hero-pattern"
+                patternUnits="userSpaceOnUse"
+                width="40"
+                height="40"
+                patternTransform="rotate(45)"
+              >
+                <rect width="1" height="40" fill="rgba(56,189,248,0.2)" />
+                <rect height="1" width="40" fill="rgba(168,85,247,0.2)" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hero-pattern)" />
+          </svg>
+        </div>
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+          <div class="z-10">
+            <h2
+              class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-50 leading-tight mb-6"
+            >
+              与<span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-purple-500"
+                >教育大师</span
+              >对话， <br />驱动您的学习成长之路
+            </h2>
+            <p class="mt-6 text-lg text-slate-300 max-w-xl">
+              MindLink 让您随时与全球最具影响力的教育家、心理学家和学习专家进行
+              AI 模拟一对一或一对多的交流，获取个性化学习建议和成长指导。
+            </p>
+            <div
+              class="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"
+            >
+              <button id="register-btn" class="btn-primary shadow-glow-sky">
+                立即注册，开启智慧之旅
+              </button>
+              <button id="guest-explore-btn" class="btn-outline">
+                访客体验
+              </button>
             </div>
-        </section>
-        
-        <!-- Mentors Preview Section -->
-        <section id="mentors-preview" class="py-16 md:py-24 bg-slate-900">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-4">与<span class="text-logo-gradient">大师</span>同行</h2>
-                <p class="text-center text-slate-400 mb-16 max-w-2xl mx-auto">部分 AI 模拟导师阵容，汲取多元化商业智慧。</p>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8">
-                    <!-- Mentor previews will be dynamically inserted by JS or hardcoded for landing page -->
-                    <div class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover">
-                        <img src="../assets/images/mentors/buffett.jpg" alt="Warren Buffett" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
-                        <h4 class="font-semibold text-slate-100">沃伦·巴菲特</h4>
-                        <p class="text-xs text-slate-400 text-center">价值投资泰斗</p>
-                    </div>
-                    <div class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover">
-                        <img src="../assets/images/mentors/mayun.jpg" alt="Jack Ma" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
-                        <h4 class="font-semibold text-slate-100">马云</h4>
-                        <p class="text-xs text-slate-400 text-center">电商先驱</p>
-                    </div>
-                    <div class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover">
-                        <img src="../assets/images/mentors/sam-altman.jpg" alt="Sam Altman" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
-                        <h4 class="font-semibold text-slate-100">Sam Altman</h4>
-                        <p class="text-xs text-slate-400 text-center">AI创新领袖</p>
-                    </div>
-                    <div class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg/440px-Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg" alt="Steve Jobs" class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg">
-                        <h4 class="font-semibold text-slate-100">Steve Jobs</h4>
-                        <p class="text-xs text-slate-400 text-center">科技创新巨匠</p>
-                    </div>
-                </div>
-                 <div class="text-center mt-12">
-                    <button id="view-all-mentors-btn" class="btn-secondary">查看全部导师</button>
-                </div>
+          </div>
+          <div
+            class="relative h-80 md:h-[28rem] rounded-xl overflow-hidden cool-card shadow-2xl shadow-purple-500/20 group"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YnVzaW5lc3MlMjBtZWV0aW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60"
+              alt="AI Mentor Conversation"
+              class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-slate-800/80 to-transparent"
+            ></div>
+            <div
+              class="absolute inset-0 flex items-center justify-center flex-col text-white p-8"
+            >
+              <div
+                class="w-24 h-24 bg-gradient-to-br from-sky-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-xl"
+              >
+                <span class="text-white font-bold text-5xl">F</span>
+              </div>
+              <h3 class="text-2xl md:text-3xl font-bold mb-3 text-slate-50">
+                AI学习导师
+              </h3>
+              <p class="text-center text-slate-300">
+                让全球顶尖教育智慧为您的学习旅程保驾护航
+              </p>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        
-        <!-- Testimonials -->
-        <!-- 
+      <!-- Features Section -->
+      <section id="features" class="py-16 md:py-24 bg-slate-850">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-4"
+          >
+            专为学习者打造的<span class="text-logo-gradient">智慧引擎</span>
+          </h2>
+          <p class="text-center text-slate-400 mb-16 max-w-2xl mx-auto">
+            我们融合前沿AI技术与顶尖教育智慧，助您高效学习，快速成长。
+          </p>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <div class="cool-card cool-card-hover p-8 text-center">
+              <div
+                class="w-16 h-16 bg-gradient-to-br from-sky-500 to-sky-600 rounded-xl flex items-center justify-center mb-6 mx-auto shadow-lg"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-100 mb-3">
+                全球顶尖教育导师 AI 模拟
+              </h3>
+              <p class="text-slate-400">
+                与皮亚杰、杜威等教育大师的 AI
+                进行一对一深度交流，获取基于他们智慧的个性化学习建议。
+              </p>
+            </div>
+
+            <div class="cool-card cool-card-hover p-8 text-center">
+              <div
+                class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 mx-auto shadow-lg"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-100 mb-3">
+                结构化学习引导
+              </h3>
+              <p class="text-slate-400">
+                专业的学习框架和引导系统，助您制定学习计划和提出有价值的问题，最大化从
+                AI 导师处获取的学习洞见。
+              </p>
+            </div>
+
+            <div class="cool-card cool-card-hover p-8 text-center">
+              <div
+                class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 mx-auto shadow-lg"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-100 mb-3">
+                实时学习反馈
+              </h3>
+              <p class="text-slate-400">
+                获取针对您特定学习场景的实用建议，不仅是理论指导，更有基于导师智慧风格的可操作学习方案。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mentors Preview Section -->
+      <section id="mentors-preview" class="py-16 md:py-24 bg-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-4"
+          >
+            与<span class="text-logo-gradient">教育大师</span>同行
+          </h2>
+          <p class="text-center text-slate-400 mb-16 max-w-2xl mx-auto">
+            部分 AI 模拟教育导师阵容，汲取多元化学习智慧。
+          </p>
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8"
+          >
+            <!-- Mentor previews will be dynamically inserted by JS or hardcoded for landing page -->
+            <div
+              class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover"
+            >
+              <img
+                src="../assets/images/mentors/musk.jpeg"
+                alt="埃隆·马斯克"
+                class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg"
+              />
+              <h4 class="font-semibold text-slate-100">埃隆·马斯克</h4>
+              <p class="text-xs text-slate-400 text-center">学习动机专家</p>
+            </div>
+            <div
+              class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover"
+            >
+              <img
+                src="../assets/images/mentors/piaget.jpeg"
+                alt="让·皮亚杰"
+                class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg"
+              />
+              <h4 class="font-semibold text-slate-100">让·皮亚杰</h4>
+              <p class="text-xs text-slate-400 text-center">认知发展专家</p>
+            </div>
+            <div
+              class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover"
+            >
+              <img
+                src="../assets/images/mentors/dewey.jpeg"
+                alt="约翰·杜威"
+                class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg"
+              />
+              <h4 class="font-semibold text-slate-100">约翰·杜威</h4>
+              <p class="text-xs text-slate-400 text-center">反思学习专家</p>
+            </div>
+            <div
+              class="flex flex-col items-center space-y-3 p-4 cool-card cool-card-hover"
+            >
+              <img
+                src="../assets/images/mentors/ebbinghaus.jpeg"
+                alt="赫尔曼·艾宾浩斯"
+                class="w-24 h-24 rounded-full object-cover border-2 border-slate-700 shadow-lg"
+              />
+              <h4 class="font-semibold text-slate-100">赫尔曼·艾宾浩斯</h4>
+              <p class="text-xs text-slate-400 text-center">记忆科学专家</p>
+            </div>
+          </div>
+          <div class="text-center mt-12">
+            <button id="view-all-mentors-btn" class="btn-secondary">
+              查看全部导师
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <!--
         <section id="testimonials" class="py-16 md:py-24 bg-slate-850">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-4">创始人的<span class="text-logo-gradient">选择与信赖</span></h2>
@@ -222,265 +460,632 @@
             </div>
         </section>  -->
 
+      <!-- Pricing -->
+      <section id="pricing" class="py-16 md:py-24 bg-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-4"
+          >
+            简单透明的<span class="text-logo-gradient">订阅方案</span>
+          </h2>
+          <p class="text-center text-slate-400 mb-16 max-w-2xl mx-auto">
+            选择最适合您学习阶段的方案，随时调整以满足您不断变化的学习需求。
+          </p>
 
-        <!-- Pricing -->
-        <section id="pricing" class="py-16 md:py-24 bg-slate-900">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-4">简单透明的<span class="text-logo-gradient">订阅方案</span></h2>
-                <p class="text-center text-slate-400 mb-16 max-w-2xl mx-auto">选择最适合您创业阶段的方案，随时调整以满足您不断变化的需求。</p>
-
-                <div class="grid md:grid-cols-3 gap-8 items-stretch">
-                    <div class="cool-card p-8 flex flex-col">
-                        <h3 class="text-2xl font-bold text-slate-100 mb-2">启航版</h3>
-                        <p class="text-slate-400 mb-6">适合刚起步的探索者</p>
-                        <p class="text-4xl font-extrabold text-slate-50 mb-1">¥199<span class="text-xl text-slate-400 font-normal">/月</span></p>
-                        <p class="text-sm text-slate-500 mb-6">或 ¥1990/年 (立省2个月)</p>
-                        <ul class="space-y-3 mb-8 text-slate-300 flex-grow">
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>每月10次深度对话</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>访问3位核心AI导师</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>基础提问引导手册</li>
-                        </ul>
-                        <button class="w-full btn-secondary mt-auto">选择此方案</button>
-                    </div>
-
-                    <div class="cool-card p-8 border-2 border-sky-500 shadow-glow-sky flex flex-col relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-sky-500 text-white text-xs font-bold uppercase px-6 py-1.5 transform translate-x-1/3 -translate-y-1/3 rotate-45 shadow-md">热门</div>
-                        <h3 class="text-2xl font-bold text-slate-100 mb-2">专业版</h3>
-                        <p class="text-slate-400 mb-6">适合快速成长的创业公司</p>
-                        <p class="text-4xl font-extrabold text-slate-50 mb-1">¥499<span class="text-xl text-slate-400 font-normal">/月</span></p>
-                        <p class="text-sm text-slate-500 mb-6">或 ¥4990/年 (立省2个月)</p>
-                        <ul class="space-y-3 mb-8 text-slate-300 flex-grow">
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>每月50次深度对话</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>访问全部AI导师</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>完整提问引导手册</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>对话历史记录导出</li>
-                        </ul>
-                        <button class="w-full btn-primary mt-auto shadow-glow-sky">选择此方案</button>
-                    </div>
-
-                    <div class="cool-card p-8 flex flex-col">
-                        <h3 class="text-2xl font-bold text-slate-100 mb-2">企业版</h3>
-                        <p class="text-slate-400 mb-6">适合成熟企业和团队</p>
-                        <p class="text-4xl font-extrabold text-slate-50 mb-1">¥999<span class="text-xl text-slate-400 font-normal">/月</span></p>
-                        <p class="text-sm text-slate-500 mb-6">按需定制年度方案</p>
-                        <ul class="space-y-3 mb-8 text-slate-300 flex-grow">
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>无限次深度对话</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>多用户账号 (5个起)</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>专属行业知识库定制</li>
-                            <li class="flex items-center"><svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>优先客户支持与培训</li>
-                        </ul>
-                        <button class="w-full btn-secondary mt-auto">联系我们定制</button>
-                    </div>
-                </div>
+          <div class="grid md:grid-cols-3 gap-8 items-stretch">
+            <div class="cool-card p-8 flex flex-col">
+              <h3 class="text-2xl font-bold text-slate-100 mb-2">启航版</h3>
+              <p class="text-slate-400 mb-6">适合学习入门的探索者</p>
+              <p class="text-4xl font-extrabold text-slate-50 mb-1">
+                ¥199<span class="text-xl text-slate-400 font-normal">/月</span>
+              </p>
+              <p class="text-sm text-slate-500 mb-6">或 ¥1990/年 (立省2个月)</p>
+              <ul class="space-y-3 mb-8 text-slate-300 flex-grow">
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >每月10次深度对话
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >访问3位核心AI导师
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >基础提问引导手册
+                </li>
+              </ul>
+              <button class="w-full btn-secondary mt-auto">选择此方案</button>
             </div>
-        </section>
 
-        <!-- Login Modal -->
-        <div id="login-modal" class="modal-backdrop hidden items-center justify-center">
-            <div class="modal-content-dark max-w-md w-full mx-4 p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-slate-100">用户登录</h3>
-                    <button id="close-login" class="text-slate-400 hover:text-slate-200 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-                <form id="login-form">
-                    <!-- 错误提示区域 -->
-                    <div id="login-error-message" class="mb-4 hidden p-4 rounded-lg border-2">
-                        <div id="login-error-content" class="flex items-center">
-                            <svg id="login-error-icon" class="w-6 h-6 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span id="login-error-text" class="font-medium"></span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-5">
-                        <label for="email" class="block text-sm font-medium text-slate-300 mb-1">邮箱</label>
-                        <input type="email" id="email" name="email" class="dark-input" required>
-                    </div>
-                    <div class="mb-8">
-                        <label for="password" class="block text-sm font-medium text-slate-300 mb-1">密码</label>
-                        <input type="password" id="password" name="password" class="dark-input" required>
-                    </div>
-                    <button type="submit" class="w-full btn-primary shadow-glow-sky">
-                        登录
-                    </button>
-                </form>
+            <div
+              class="cool-card p-8 border-2 border-sky-500 shadow-glow-sky flex flex-col relative overflow-hidden"
+            >
+              <div
+                class="absolute top-0 right-0 bg-sky-500 text-white text-xs font-bold uppercase px-6 py-1.5 transform translate-x-1/3 -translate-y-1/3 rotate-45 shadow-md"
+              >
+                热门
+              </div>
+              <h3 class="text-2xl font-bold text-slate-100 mb-2">专业版</h3>
+              <p class="text-slate-400 mb-6">适合深度学习的进阶者</p>
+              <p class="text-4xl font-extrabold text-slate-50 mb-1">
+                ¥499<span class="text-xl text-slate-400 font-normal">/月</span>
+              </p>
+              <p class="text-sm text-slate-500 mb-6">或 ¥4990/年 (立省2个月)</p>
+              <ul class="space-y-3 mb-8 text-slate-300 flex-grow">
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >每月50次深度对话
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >访问全部AI导师
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >完整提问引导手册
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >对话历史记录导出
+                </li>
+              </ul>
+              <button class="w-full btn-primary mt-auto shadow-glow-sky">
+                选择此方案
+              </button>
             </div>
+
+            <div class="cool-card p-8 flex flex-col">
+              <h3 class="text-2xl font-bold text-slate-100 mb-2">机构版</h3>
+              <p class="text-slate-400 mb-6">适合教育机构的定制需求</p>
+              <p class="text-4xl font-extrabold text-slate-50 mb-1">
+                ¥999<span class="text-xl text-slate-400 font-normal">/月</span>
+              </p>
+              <p class="text-sm text-slate-500 mb-6">按需定制年度方案</p>
+              <ul class="space-y-3 mb-8 text-slate-300 flex-grow">
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >无限次深度对话
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >多用户账号 (5个起)
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >专属行业知识库定制
+                </li>
+                <li class="flex items-center">
+                  <svg
+                    class="h-5 w-5 text-green-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    /></svg
+                  >优先客户支持与培训
+                </li>
+              </ul>
+              <button class="w-full btn-secondary mt-auto">联系我们定制</button>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <!-- Register Modal -->
-        <div id="register-modal" class="modal-backdrop hidden items-center justify-center">
-            <div class="modal-content-dark max-w-md w-full mx-4 p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-slate-100">新用户注册</h3>
-                    <button id="close-register" class="text-slate-400 hover:text-slate-200 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-                <form id="register-form">
-                    <!-- 错误提示区域 -->
-                    <div id="register-error-message" class="mb-4 hidden p-4 rounded-lg border-2">
-                        <div id="register-error-content" class="flex items-center">
-                            <svg id="register-error-icon" class="w-6 h-6 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span id="register-error-text" class="font-medium"></span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-5">
-                        <label for="name" class="block text-sm font-medium text-slate-300 mb-1">姓名</label>
-                        <input type="text" id="name" name="name" class="dark-input" required>
-                    </div>
-                    <div class="mb-5">
-                        <label for="reg-email" class="block text-sm font-medium text-slate-300 mb-1">邮箱</label>
-                        <input type="email" id="reg-email" name="email" class="dark-input" required>
-                    </div>
-                    <div class="mb-5">
-                        <label for="reg-password" class="block text-sm font-medium text-slate-300 mb-1">密码</label>
-                        <input type="password" id="reg-password" name="password" class="dark-input" required>
-                    </div>
-                    <div class="mb-8">
-                        <label for="confirm-password" class="block text-sm font-medium text-slate-300 mb-1">确认密码</label>
-                        <input type="password" id="confirm-password" name="confirm-password" class="dark-input" required>
-                    </div>
-                    <button type="submit" class="w-full btn-primary shadow-glow-sky">
-                        注册
-                    </button>
-                </form>
+      <!-- Login Modal -->
+      <div
+        id="login-modal"
+        class="modal-backdrop hidden items-center justify-center"
+      >
+        <div class="modal-content-dark max-w-md w-full mx-4 p-8">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-slate-100">用户登录</h3>
+            <button
+              id="close-login"
+              class="text-slate-400 hover:text-slate-200 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <form id="login-form">
+            <!-- 错误提示区域 -->
+            <div
+              id="login-error-message"
+              class="mb-4 hidden p-4 rounded-lg border-2"
+            >
+              <div id="login-error-content" class="flex items-center">
+                <svg
+                  id="login-error-icon"
+                  class="w-6 h-6 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span id="login-error-text" class="font-medium"></span>
+              </div>
             </div>
+
+            <div class="mb-5">
+              <label
+                for="email"
+                class="block text-sm font-medium text-slate-300 mb-1"
+                >邮箱</label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="dark-input"
+                required
+              />
+            </div>
+            <div class="mb-8">
+              <label
+                for="password"
+                class="block text-sm font-medium text-slate-300 mb-1"
+                >密码</label
+              >
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="dark-input"
+                required
+              />
+            </div>
+            <button type="submit" class="w-full btn-primary shadow-glow-sky">
+              登录
+            </button>
+          </form>
         </div>
+      </div>
 
-        <!-- Footer -->
-        <footer class="bg-slate-850 border-t border-slate-700/50 py-12 mt-auto">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid md:grid-cols-4 gap-8">
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl mr-3">F</div>
-                            <h2 class="text-xl font-bold text-logo-gradient">FounderMind</h2>
-                        </div>
-                        <p class="text-slate-400 text-sm">与世界顶尖智慧的 AI 模拟对话，驱动您的创业成功之路。</p>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-slate-200 mb-4">产品</h3>
-                        <ul class="space-y-2">
-                            <li><a href="index.html#features" class="text-slate-400 hover:text-sky-400 transition-colors">核心功能</a></li>
-                            <li><a href="index.html#mentors-preview" class="text-slate-400 hover:text-sky-400 transition-colors">AI 导师库</a></li>
-                            <li><a href="manual.html" class="text-slate-400 hover:text-sky-400 transition-colors">提问手册</a></li>
-                            <li><a href="index.html#pricing" class="text-slate-400 hover:text-sky-400 transition-colors">订阅方案</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-slate-200 mb-4">资源</h3>
-                        <ul class="space-y-2">
-                            <li><a href="index.html#" class="text-slate-400 hover:text-sky-400 transition-colors">博客</a></li>
-                            <li><a href="index.html#" class="text-slate-400 hover:text-sky-400 transition-colors">案例研究</a></li>
-                            <li><a href="index.html#" class="text-slate-400 hover:text-sky-400 transition-colors">创业指南</a></li>
-                            <li><a href="index.html#" class="text-slate-400 hover:text-sky-400 transition-colors">常见问题</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-slate-200 mb-4">联系我们</h3>
-                        <ul class="space-y-2">
-                            <li><a href="mailto:support@foundermind.com" class="text-slate-400 hover:text-sky-400 transition-colors">support@foundermind.com</a></li>
-                        </ul>
-                        <div class="flex space-x-4 mt-4">
-                            <a href="index.html#" class="text-slate-400 hover:text-sky-400 transition-colors" aria-label="WeChat">
-                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.69,11.52c0.25,0,0.42-0.17,0.42-0.42c0-0.26-0.17-0.42-0.42-0.42c-0.25,0-0.51,0.16-0.51,0.42 C8.18,11.35,8.44,11.52,8.69,11.52z M12.08,11.52c0.25,0,0.42-0.17,0.42-0.42c0-0.26-0.17-0.42-0.42-0.42 c-0.25,0-0.51,0.16-0.51,0.42C11.57,11.35,11.83,11.52,12.08,11.52z M14.89,13.07c0.17,0,0.34-0.17,0.34-0.34 c0-0.17-0.17-0.34-0.34-0.34c-0.17,0-0.34,0.17-0.34,0.34C14.55,12.9,14.72,13.07,14.89,13.07z M17.6,13.07 c0.17,0,0.34-0.17,0.34-0.34c0-0.17-0.17-0.34-0.34-0.34c-0.17,0-0.34,0.17-0.34,0.34C17.26,12.9,17.43,13.07,17.6,13.07z M19.66,12.03c0,2.24-2.31,4.05-5.14,4.05c-0.76,0-1.44-0.08-2.03-0.25c-0.34,0.25-1.19,0.76-1.67,0.85 c-0.17,0.08-0.25,0-0.17-0.17c0.08-0.17,0.34-0.59,0.51-0.93c-1.7-0.93-2.8-2.2-2.8-3.63c0-2.16,2.38-3.96,5.13-3.96 C17.35,7.98,19.66,9.79,19.66,12.03z M19.92,15.92c0.17,0.25,0.34,0.59,0.42,0.93c0.08,0.08,0,0.25-0.17,0.17 c-0.34-0.17-1.19-0.59-1.61-0.85c-0.51,0.17-1.11,0.25-1.7,0.25c-2.38,0-4.3-1.53-4.3-3.45c0-1.92,1.92-3.45,4.3-3.45 c2.29,0,4.14,1.53,4.14,3.45C20.93,13.97,20.51,15.08,19.92,15.92z M23.99,12.03c0,4.39-4.48,8.02-10.01,8.02 c-1.1,0-2.2-0.17-3.18-0.41C10.1,20.01,8.5,21,7.16,21.17c-0.25,0.08-0.42,0-0.34-0.25c0.17-0.34,0.51-0.76,0.76-1.27 c-2.63-1.53-4.33-3.62-4.33-6.04C3.25,9.22,7.66,5.59,13.27,5.59C18.71,5.59,23.99,9.22,23.99,12.03z"></path></svg>
-                            </a>
-                            <a href="index.html#" class="text-slate-400 hover:text-sky-400 transition-colors" aria-label="Sina Weibo">
-                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10.9,18.3c-4.1,0.4-7.6-1.5-7.8-4.2C3,11.4,6.2,9,10.3,8.6c4.1-0.4,7.6,1.5,7.8,4.2C18.3,15.5,15,18,10.9,18.3z M13.1,11.5c-0.2-0.1-0.3-0.1-0.5-0.1c-0.2,0-0.4,0.1-0.5,0.2c-0.1,0.1-0.2,0.3-0.2,0.5c0,0.2,0.1,0.3,0.2,0.5 c0.1,0.1,0.3,0.2,0.5,0.2c1.2,0.3,2,1.3,1.8,2.2c0,0.2,0,0.3,0.1,0.5c0.1,0.1,0.3,0.2,0.5,0.2c0.2,0,0.3-0.1,0.5-0.2 c0.1-0.1,0.2-0.3,0.1-0.5C15.6,13.6,14.6,12,13.1,11.5z M12,13.6c-0.2-0.1-0.4-0.1-0.5,0c-0.2,0.1-0.3,0.3-0.3,0.5 c0,0.2,0.1,0.4,0.3,0.5c0.2,0.1,0.4,0.1,0.5,0c0.5-0.1,0.9,0.1,1.1,0.5c0.2,0.4,0.1,0.9-0.3,1.3c-0.2,0.2-0.2,0.4-0.1,0.6 c0.1,0.2,0.3,0.3,0.5,0.3c0.1,0,0.1,0,0.2,0c0.4-0.2,0.7-0.5,0.9-0.8c0.5-1-0.1-2.1-1.1-2.5c-0.3-0.1-0.6-0.2-0.8-0.3 C12.2,13.6,12.1,13.6,12,13.6z M15.3,9.9c-0.5-0.6-1.2-0.9-1.9-0.9c-0.3,0-0.5,0.2-0.5,0.5c0,0.3,0.2,0.5,0.5,0.5 c0.5,0,0.9,0.2,1.2,0.6c0.3,0.4,0.4,0.8,0.2,1.3c-0.1,0.3,0.1,0.5,0.4,0.6c0.3,0.1,0.6-0.1,0.6-0.4C16.1,11.3,15.8,10.5,15.3,9.9z M20.2,6c-1-1.1-2.5-1.6-3.9-1.4c-0.3,0-0.5,0.3-0.4,0.6c0,0.3,0.3,0.5,0.6,0.4c1.1-0.1,2.1,0.2,2.9,1c0.8,0.8,1.1,1.8,1,2.9 c0,0.3,0.2,0.5,0.5,0.5c0,0,0,0,0,0c0.3,0,0.5-0.2,0.5-0.5C21.6,8.2,21.2,7,20.2,6z M18.9,8.5c-0.5-0.5-1.2-0.8-1.9-0.6 c-0.3,0-0.5,0.3-0.4,0.5c0,0.3,0.3,0.5,0.5,0.4c0.3-0.1,0.7,0,0.9,0.3c0.2,0.3,0.3,0.6,0.2,1c0,0.3,0.1,0.5,0.4,0.6 c0.3,0,0.5-0.1,0.6-0.4C19.4,9.7,19.3,9,18.9,8.5z"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="border-t border-slate-700 mt-10 pt-8 text-center text-slate-500 text-sm">
-                    <p>&copy; 2024 FounderMind. 版权所有. 助力创业者连接智慧，成就非凡。</p>
-                </div>
+      <!-- Register Modal -->
+      <div
+        id="register-modal"
+        class="modal-backdrop hidden items-center justify-center"
+      >
+        <div class="modal-content-dark max-w-md w-full mx-4 p-8">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-slate-100">新用户注册</h3>
+            <button
+              id="close-register"
+              class="text-slate-400 hover:text-slate-200 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <form id="register-form">
+            <!-- 错误提示区域 -->
+            <div
+              id="register-error-message"
+              class="mb-4 hidden p-4 rounded-lg border-2"
+            >
+              <div id="register-error-content" class="flex items-center">
+                <svg
+                  id="register-error-icon"
+                  class="w-6 h-6 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span id="register-error-text" class="font-medium"></span>
+              </div>
             </div>
-        </footer>
+
+            <div class="mb-5">
+              <label
+                for="name"
+                class="block text-sm font-medium text-slate-300 mb-1"
+                >姓名</label
+              >
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="dark-input"
+                required
+              />
+            </div>
+            <div class="mb-5">
+              <label
+                for="reg-email"
+                class="block text-sm font-medium text-slate-300 mb-1"
+                >邮箱</label
+              >
+              <input
+                type="email"
+                id="reg-email"
+                name="email"
+                class="dark-input"
+                required
+              />
+            </div>
+            <div class="mb-5">
+              <label
+                for="reg-password"
+                class="block text-sm font-medium text-slate-300 mb-1"
+                >密码</label
+              >
+              <input
+                type="password"
+                id="reg-password"
+                name="password"
+                class="dark-input"
+                required
+              />
+            </div>
+            <div class="mb-8">
+              <label
+                for="confirm-password"
+                class="block text-sm font-medium text-slate-300 mb-1"
+                >确认密码</label
+              >
+              <input
+                type="password"
+                id="confirm-password"
+                name="confirm-password"
+                class="dark-input"
+                required
+              />
+            </div>
+            <button type="submit" class="w-full btn-primary shadow-glow-sky">
+              注册
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="bg-slate-850 border-t border-slate-700/50 py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid md:grid-cols-4 gap-8">
+            <div>
+              <div class="flex items-center mb-4">
+                <div
+                  class="w-10 h-10 bg-gradient-to-br from-sky-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl mr-3"
+                >
+                  F
+                </div>
+                <h2 class="text-xl font-bold text-logo-gradient">MindLink</h2>
+              </div>
+              <p class="text-slate-400 text-sm">
+                与世界顶尖教育家的 AI 模拟对话，驱动您的学习成长之路。
+              </p>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-slate-200 mb-4">产品</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="index.html#features"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >核心功能</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="index.html#mentors-preview"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >AI 导师库</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="manual.html"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >提问手册</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="index.html#pricing"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >订阅方案</a
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-slate-200 mb-4">资源</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="index.html#"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >博客</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="index.html#"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >案例研究</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="index.html#"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >学习指南</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="index.html#"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >常见问题</a
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-slate-200 mb-4">
+                联系我们
+              </h3>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="mailto:support@mindlink.com"
+                    class="text-slate-400 hover:text-sky-400 transition-colors"
+                    >support@mindlink.com</a
+                  >
+                </li>
+              </ul>
+              <div class="flex space-x-4 mt-4">
+                <a
+                  href="index.html#"
+                  class="text-slate-400 hover:text-sky-400 transition-colors"
+                  aria-label="WeChat"
+                >
+                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M8.69,11.52c0.25,0,0.42-0.17,0.42-0.42c0-0.26-0.17-0.42-0.42-0.42c-0.25,0-0.51,0.16-0.51,0.42 C8.18,11.35,8.44,11.52,8.69,11.52z M12.08,11.52c0.25,0,0.42-0.17,0.42-0.42c0-0.26-0.17-0.42-0.42-0.42 c-0.25,0-0.51,0.16-0.51,0.42C11.57,11.35,11.83,11.52,12.08,11.52z M14.89,13.07c0.17,0,0.34-0.17,0.34-0.34 c0-0.17-0.17-0.34-0.34-0.34c-0.17,0-0.34,0.17-0.34,0.34C14.55,12.9,14.72,13.07,14.89,13.07z M17.6,13.07 c0.17,0,0.34-0.17,0.34-0.34c0-0.17-0.17-0.34-0.34-0.34c-0.17,0-0.34,0.17-0.34,0.34C17.26,12.9,17.43,13.07,17.6,13.07z M19.66,12.03c0,2.24-2.31,4.05-5.14,4.05c-0.76,0-1.44-0.08-2.03-0.25c-0.34,0.25-1.19,0.76-1.67,0.85 c-0.17,0.08-0.25,0-0.17-0.17c0.08-0.17,0.34-0.59,0.51-0.93c-1.7-0.93-2.8-2.2-2.8-3.63c0-2.16,2.38-3.96,5.13-3.96 C17.35,7.98,19.66,9.79,19.66,12.03z M19.92,15.92c0.17,0.25,0.34,0.59,0.42,0.93c0.08,0.08,0,0.25-0.17,0.17 c-0.34-0.17-1.19-0.59-1.61-0.85c-0.51,0.17-1.11,0.25-1.7,0.25c-2.38,0-4.3-1.53-4.3-3.45c0-1.92,1.92-3.45,4.3-3.45 c2.29,0,4.14,1.53,4.14,3.45C20.93,13.97,20.51,15.08,19.92,15.92z M23.99,12.03c0,4.39-4.48,8.02-10.01,8.02 c-1.1,0-2.2-0.17-3.18-0.41C10.1,20.01,8.5,21,7.16,21.17c-0.25,0.08-0.42,0-0.34-0.25c0.17-0.34,0.51-0.76,0.76-1.27 c-2.63-1.53-4.33-3.62-4.33-6.04C3.25,9.22,7.66,5.59,13.27,5.59C18.71,5.59,23.99,9.22,23.99,12.03z"
+                    ></path>
+                  </svg>
+                </a>
+                <a
+                  href="index.html#"
+                  class="text-slate-400 hover:text-sky-400 transition-colors"
+                  aria-label="Sina Weibo"
+                >
+                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M10.9,18.3c-4.1,0.4-7.6-1.5-7.8-4.2C3,11.4,6.2,9,10.3,8.6c4.1-0.4,7.6,1.5,7.8,4.2C18.3,15.5,15,18,10.9,18.3z M13.1,11.5c-0.2-0.1-0.3-0.1-0.5-0.1c-0.2,0-0.4,0.1-0.5,0.2c-0.1,0.1-0.2,0.3-0.2,0.5c0,0.2,0.1,0.3,0.2,0.5 c0.1,0.1,0.3,0.2,0.5,0.2c1.2,0.3,2,1.3,1.8,2.2c0,0.2,0,0.3,0.1,0.5c0.1,0.1,0.3,0.2,0.5,0.2c0.2,0,0.3-0.1,0.5-0.2 c0.1-0.1,0.2-0.3,0.1-0.5C15.6,13.6,14.6,12,13.1,11.5z M12,13.6c-0.2-0.1-0.4-0.1-0.5,0c-0.2,0.1-0.3,0.3-0.3,0.5 c0,0.2,0.1,0.4,0.3,0.5c0.2,0.1,0.4,0.1,0.5,0c0.5-0.1,0.9,0.1,1.1,0.5c0.2,0.4,0.1,0.9-0.3,1.3c-0.2,0.2-0.2,0.4-0.1,0.6 c0.1,0.2,0.3,0.3,0.5,0.3c0.1,0,0.1,0,0.2,0c0.4-0.2,0.7-0.5,0.9-0.8c0.5-1-0.1-2.1-1.1-2.5c-0.3-0.1-0.6-0.2-0.8-0.3 C12.2,13.6,12.1,13.6,12,13.6z M15.3,9.9c-0.5-0.6-1.2-0.9-1.9-0.9c-0.3,0-0.5,0.2-0.5,0.5c0,0.3,0.2,0.5,0.5,0.5 c0.5,0,0.9,0.2,1.2,0.6c0.3,0.4,0.4,0.8,0.2,1.3c-0.1,0.3,0.1,0.5,0.4,0.6c0.3,0.1,0.6-0.1,0.6-0.4C16.1,11.3,15.8,10.5,15.3,9.9z M20.2,6c-1-1.1-2.5-1.6-3.9-1.4c-0.3,0-0.5,0.3-0.4,0.6c0,0.3,0.3,0.5,0.6,0.4c1.1-0.1,2.1,0.2,2.9,1c0.8,0.8,1.1,1.8,1,2.9 c0,0.3,0.2,0.5,0.5,0.5c0,0,0,0,0,0c0.3,0,0.5-0.2,0.5-0.5C21.6,8.2,21.2,7,20.2,6z M18.9,8.5c-0.5-0.5-1.2-0.8-1.9-0.6 c-0.3,0-0.5,0.3-0.4,0.5c0,0.3,0.3,0.5,0.5,0.4c0.3-0.1,0.7,0,0.9,0.3c0.2,0.3,0.3,0.6,0.2,1c0,0.3,0.1,0.5,0.4,0.6 c0.3,0,0.5-0.1,0.6-0.4C19.4,9.7,19.3,9,18.9,8.5z"
+                    ></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="border-t border-slate-700 mt-10 pt-8 text-center text-slate-500 text-sm"
+          >
+            <p>
+              &copy; 2024 MindLink. 版权所有. 助力学习者连接智慧，成就卓越。
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
     <script>
-        // Mobile nav toggle
-        const mobileNavToggle = document.getElementById('mobile-nav-toggle');
-        const mobileNav = document.getElementById('mobile-nav');
-        if (mobileNavToggle && mobileNav) {
-            mobileNavToggle.addEventListener('click', () => {
-                mobileNav.classList.toggle('hidden');
-            });
-        }
-
-        // Login modal functionality for header button
-        const loginBtnHeader = document.getElementById('login-btn-header');
-        const loginBtnMobile = document.getElementById('login-btn-mobile');
-        const loginModal = document.getElementById('login-modal');
-        const closeLoginBtn = document.getElementById('close-login');
-        
-        function openLoginModal() {
-            if(loginModal) loginModal.classList.replace('hidden', 'flex');
-        }
-        function closeLoginModal() {
-            if(loginModal) loginModal.classList.replace('flex', 'hidden');
-        }
-
-        if(loginBtnHeader) loginBtnHeader.addEventListener('click', openLoginModal);
-        if(loginBtnMobile) loginBtnMobile.addEventListener('click', () => {
-            openLoginModal();
-            if(mobileNav) mobileNav.classList.add('hidden'); // Close mobile nav
+      // Mobile nav toggle
+      const mobileNavToggle = document.getElementById("mobile-nav-toggle");
+      const mobileNav = document.getElementById("mobile-nav");
+      if (mobileNavToggle && mobileNav) {
+        mobileNavToggle.addEventListener("click", () => {
+          mobileNav.classList.toggle("hidden");
         });
-        if(closeLoginBtn) closeLoginBtn.addEventListener('click', closeLoginModal);
+      }
 
+      // Login modal functionality for header button
+      const loginBtnHeader = document.getElementById("login-btn-header");
+      const loginBtnMobile = document.getElementById("login-btn-mobile");
+      const loginModal = document.getElementById("login-modal");
+      const closeLoginBtn = document.getElementById("close-login");
 
-        // Register modal functionality
-        const registerBtn = document.getElementById('register-btn');
-        const registerModal = document.getElementById('register-modal');
-        const closeRegisterBtn = document.getElementById('close-register');
+      function openLoginModal() {
+        if (loginModal) loginModal.classList.replace("hidden", "flex");
+      }
+      function closeLoginModal() {
+        if (loginModal) loginModal.classList.replace("flex", "hidden");
+      }
 
-        if(registerBtn) {
-            registerBtn.addEventListener('click', () => {
-                if(registerModal) registerModal.classList.replace('hidden', 'flex');
-            });
-        }
-        if(closeRegisterBtn) {
-            closeRegisterBtn.addEventListener('click', () => {
-                if(registerModal) registerModal.classList.replace('flex', 'hidden');
-            });
-        }
-        
-        // Guest explore / View all mentors button
-        const guestExploreBtn = document.getElementById('guest-explore-btn');
-        const viewAllMentorsBtn = document.getElementById('view-all-mentors-btn');
-
-        function navigateToDashboard() {
-            // Simulate successful login for guest/demo
-            sessionStorage.setItem('userLoggedIn', 'true'); 
-            window.location.href = 'dashboard.html';
-        }
-
-        if(guestExploreBtn) guestExploreBtn.addEventListener('click', navigateToDashboard);
-        if(viewAllMentorsBtn) viewAllMentorsBtn.addEventListener('click', navigateToDashboard);
-
-        // Close modals on escape key
-        window.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                if (loginModal && loginModal.classList.contains('flex')) {
-                    closeLoginModal();
-                }
-                if (registerModal && registerModal.classList.contains('flex')) {
-                    if(closeRegisterBtn) closeRegisterBtn.click();
-                }
-            }
+      if (loginBtnHeader)
+        loginBtnHeader.addEventListener("click", openLoginModal);
+      if (loginBtnMobile)
+        loginBtnMobile.addEventListener("click", () => {
+          openLoginModal();
+          if (mobileNav) mobileNav.classList.add("hidden"); // Close mobile nav
         });
+      if (closeLoginBtn)
+        closeLoginBtn.addEventListener("click", closeLoginModal);
+
+      // Register modal functionality
+      const registerBtn = document.getElementById("register-btn");
+      const registerModal = document.getElementById("register-modal");
+      const closeRegisterBtn = document.getElementById("close-register");
+
+      if (registerBtn) {
+        registerBtn.addEventListener("click", () => {
+          if (registerModal) registerModal.classList.replace("hidden", "flex");
+        });
+      }
+      if (closeRegisterBtn) {
+        closeRegisterBtn.addEventListener("click", () => {
+          if (registerModal) registerModal.classList.replace("flex", "hidden");
+        });
+      }
+
+      // Guest explore / View all mentors button
+      const guestExploreBtn = document.getElementById("guest-explore-btn");
+      const viewAllMentorsBtn = document.getElementById("view-all-mentors-btn");
+
+      function navigateToDashboard() {
+        // Simulate successful login for guest/demo
+        sessionStorage.setItem("userLoggedIn", "true");
+        window.location.href = "dashboard.html";
+      }
+
+      if (guestExploreBtn)
+        guestExploreBtn.addEventListener("click", navigateToDashboard);
+      if (viewAllMentorsBtn)
+        viewAllMentorsBtn.addEventListener("click", navigateToDashboard);
+
+      // Close modals on escape key
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          if (loginModal && loginModal.classList.contains("flex")) {
+            closeLoginModal();
+          }
+          if (registerModal && registerModal.classList.contains("flex")) {
+            if (closeRegisterBtn) closeRegisterBtn.click();
+          }
+        }
+      });
     </script>
-
-    
-    </body>
+  </body>
 </html>
-

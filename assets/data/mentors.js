@@ -1,160 +1,143 @@
 // Mentor data
 const mentors = [
-    {
-        id: 'buffett',
-        name: '沃伦·巴菲特',
-        title: '伯克希尔·哈撒韦公司董事长兼CEO',
-        avatar: '../assets/images/mentors/buffett.jpg',
-        shortBio: '价值投资的代表人物，被称为"奥马哈的神谕"，以长期价值投资和简单直接的商业智慧著称。',
-        bio: '沃伦·巴菲特是全球最成功的投资者之一，以价值投资策略著称。他相信投资于有持久竞争优势的企业，并长期持有。巴菲特强调商业简单性、财务保守性以及管理诚信度的重要性。他的投资哲学影响了几代投资者，他的年度股东信被视为商业智慧的瑰宝。',
-        expertise: ['价值投资', '商业评估', '风险管理', '企业收购', '长期战略'],
-        featured: true,
-        suggestedQuestions: [
-            '如何评估一个初创企业的内在价值？',
-            '在不确定的经济环境中，创业者应如何制定财务策略？',
-            '您认为创业早期最容易被忽视的风险是什么？',
-            '如何构建一个有持久竞争优势的商业模式？'
-        ]
-    },
-    {
-        id: 'lika',
-        name: '李嘉诚',
-        title: '长江和记实业创始人',
-        avatar: '../assets/images/mentors/lijiacheng.jpg',
-        shortBio: '亚洲最成功的企业家之一，以多元化投资和商业智慧著称，被称为"超人"。',
-        bio: '李嘉诚从一个塑料制造厂起家，逐步建立了横跨地产、零售、能源和电信的商业帝国。他以敏锐的商业嗅觉、果断的决策能力和灵活的商业策略著称。李嘉诚强调勤奋、诚信和不断学习的重要性，同时也以其慈善事业闻名。他的商业智慧融合了东西方思想，为众多创业者提供了宝贵的经验。',
-        expertise: ['多元化投资', '企业扩张', '资产管理', '风险控制', '国际化战略'],
-        featured: true,
-        suggestedQuestions: [
-            '初创企业如何有效管理现金流？',
-            '在扩展业务时，如何平衡风险和机遇？',
-            '您如何看待全球化对中小企业的挑战和机遇？',
-            '创业者应该如何培养商业直觉和决策能力？'
-        ]
-    },
-    {
-        id: 'ma',
-        name: '马云',
-        title: '阿里巴巴集团创始人',
-        avatar: '../assets/images/mentors/mayun.jpg',
-        shortBio: '中国电子商务的先驱，从英语教师到互联网巨头的创始人，以远见卓识和领导力著称。',
-        bio: '马云是阿里巴巴集团的创始人，将公司从一个小型创业公司发展为全球电子商务巨头。他以前瞻性的互联网思维、鼓舞人心的领导风格和独特的商业哲学著称。马云强调创新、客户第一和团队协作的企业文化，他的创业故事鼓舞了无数创业者。他特别关注中小企业的发展，以及科技如何改变传统商业模式。',
-        expertise: ['电子商务', '互联网创新', '团队建设', '商业模式创新', '企业文化'],
-        featured: true,
-        suggestedQuestions: [
-            '如何在激烈的市场竞争中找到自己的差异化优势？',
-            '创业初期，如何打造高效且有凝聚力的团队？',
-            '您认为未来十年互联网创业的机会在哪些领域？',
-            '如何平衡企业成长和创始人的个人成长？'
-        ]
-    },
-    {
-        id: 'altman',
-        name: 'Sam Altman',
-        title: 'OpenAI CEO',
-        avatar: '../assets/images/mentors/sam-altman.jpg',
-        shortBio: '科技创业投资者，前Y Combinator总裁，OpenAI CEO，以培养科技创业公司和人工智能领域的前瞻性著称。',
-        bio: 'Sam Altman是OpenAI的CEO，曾担任著名创业加速器Y Combinator的总裁。他在年轻时创立了社交定位应用Loopt，之后转向投资和培养科技创业公司。Altman以其对创业公司的深刻见解和对人工智能等前沿技术的前瞻性思考著称。他强调产品市场契合度、团队构建和长期思维的重要性，对科技创业生态系统有着重要影响。',
-        expertise: ['人工智能', '科技创业', '风险投资', '产品策略', '未来趋势'],
-        featured: true,
-        suggestedQuestions: [
-            '初创企业如何有效利用AI技术提升竞争力？',
-            '在技术快速迭代的环境中，如何制定长期产品战略？',
-            '创业者应该如何看待失败和学习？',
-            '您认为AI将如何改变未来的商业模式和工作方式？'
-        ]
-    },
-    {
-        id: 'musk',
-        name: 'Elon Musk',
-        title: 'Tesla, SpaceX, X（原Twitter）, Neuralink、The Boring Company 创始人兼负责人',
-        avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg/440px-Elon_Musk_Royal_Society_%28crop2%29.jpg',
-        shortBio: '连续创业者，以颠覆性创新和跨领域思维著称，致力于解决人类面临的重大挑战。',
-        bio: 'Elon Musk是多家创新公司的创始人，包括Tesla、SpaceX、Neuralink和The Boring Company。他以远大的愿景、颠覆性思维和跨领域创新能力著称。Musk将创业视为解决人类面临的重大挑战的途径，如可持续能源、太空探索和人工智能安全。他的领导风格兼具技术深度和商业敏锐度，但也因工作强度高和直言不讳而引起争议。',
-        expertise: ['颠覆性创新', '多领域创业', '工程与设计', '长期愿景', '风险管理'],
-        featured: false,
-        suggestedQuestions: [
-            '如何在创业中平衡远大愿景与短期可行性？',
-            '创业者应该如何看待失败和承担风险？',
-            '在资源有限的情况下，如何推动技术创新？',
-            '您认为未来十年最有前景的创业方向是什么？'
-        ]
-    },
-    {
-        id: 'zhang',
-        name: '张小龙',
-        title: '微信创始人，腾讯高级副总裁',
-        avatar: '../assets/images/mentors/zhangxiaolong.jpg',
-        shortBio: '中国顶级产品经理，微信之父，以极简设计理念和用户体验至上的产品哲学著称。',
-        bio: '张小龙是腾讯微信的创始人，将其打造成为中国最具影响力的社交平台。他以"克制"的产品设计理念、对用户体验的极致追求和独特的产品哲学著称。张小龙强调产品应该"让创造发挥价值，而不是产品本身"，并注重细节和简洁设计。他的产品思维对中国互联网产品的发展有着深远影响，被誉为中国顶级产品经理。',
-        expertise: ['产品设计', '用户体验', '移动互联网', '社交平台', '产品迭代'],
-        featured: false,
-        suggestedQuestions: [
-            '如何设计一个既简洁又功能强大的产品？',
-            '产品迭代中如何平衡用户反馈和自身愿景？',
-            '在移动互联网时代，如何捕捉用户需求的本质？',
-            '您认为好的产品经理应具备哪些核心能力？'
-        ]
-    },
-    {
-        id: 'jobs',
-        name: 'Steve Jobs',
-        title: 'Apple联合创始人',
-        avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg/440px-Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg',
-        shortBio: '科技创新领袖，以产品设计美学、革命性创新和完美主义著称，改变了多个行业。',
-        bio: 'Steve Jobs是Apple公司的联合创始人，他彻底改变了个人计算机、音乐、手机和平板电脑行业。Jobs以其对设计的痴迷、对细节的关注和对用户体验的极致追求著称。他的领导风格强调创新、简洁和高标准，虽然有时被视为严厉，但也激发了团队创造出革命性产品。Jobs强调科技与人文的交叉点，以及"不同凡想"(Think Different)的理念。',
-        expertise: ['产品愿景', '设计思维', '创新文化', '营销策略', '颠覆式创新'],
-        featured: false,
-        suggestedQuestions: [
-            '如何在公司内部培养创新文化？',
-            '创业者应如何平衡产品理想与市场现实？',
-            '在产品设计中，如何判断哪些功能应该舍弃？',
-            '您认为科技创业中，设计思维的重要性体现在哪里？'
-        ]
-    },
-    {
-        id: 'sandberg',
-        name: 'Sheryl Sandberg',
-        title: '前Facebook(Meta)首席运营官',
-        avatar: '../assets/images/mentors/sheryl-sandberg.jpg',
-        shortBio: '硅谷顶级管理者，著名女性领导力代表，以精湛的业务运营能力和组织管理才能著称。',
-        bio: 'Sheryl Sandberg曾担任Facebook(Meta)的首席运营官，帮助公司建立了成功的商业模式和运营体系。此前，她在Google负责全球在线销售和运营。Sandberg以其卓越的领导能力、业务洞察力和组织管理才能著称。她的著作《向前一步》(Lean In)探讨了职场女性面临的挑战和机遇，倡导女性追求职业抱负并发挥领导力。',
-        expertise: ['组织管理', '业务扩展', '企业运营', '领导力发展', '女性创业'],
-        featured: false,
-        suggestedQuestions: [
-            '创业公司如何建立高效的组织结构和运营体系？',
-            '如何在快速增长的创业公司中培养领导者？',
-            '女性创业者面临的独特挑战有哪些，如何应对？',
-            '从0到1与从1到100，运营重点有什么不同？'
-        ]
-    }
-    // 新增自定义导师示例
-    // {
-    //     id: 'custom-mentor',
-    //     name: '自定义导师',
-    //     title: '您的领域专家',
-    //     avatar: 'https://via.placeholder.com/400x400?text=Custom+Mentor',
-    //     shortBio: '这是一个自定义导师的示例，您可以根据需要修改其信息和专业领域。',
-    //     bio: '您可以在这里添加详细的导师背景介绍，包括其专业经历、核心理念、成功案例等。这些信息将被用于构建AI的回答风格和知识背景。',
-    //     expertise: ['自定义领域1', '自定义领域2', '自定义领域3'],
-    //     featured: false,
-    //     suggestedQuestions: [
-    //         '您的自定义问题1？',
-    //         '您的自定义问题2？',
-    //         '您的自定义问题3？',
-    //         '您的自定义问题4？'
-    //     ]
-    // }
+  {
+    id: "musk",
+    name: "埃隆·马斯克",
+    title: "企业家、技术创新者",
+    avatar: "../assets/images/mentors/musk.jpeg",
+    shortBio: "科技创新与战略愿景的代表人物，擅长激发学习动机与长期规划。",
+    bio: "埃隆·马斯克是现代科技企业家，以特斯拉、SpaceX等项目闻名。他强调目标导向、长期愿景和自驱力，对学习者而言，他能帮助明确学习目标和规划清晰的成长路径。",
+    expertise: ["学习动机", "战略规划", "长期目标设定", "科技创新", "自驱力"],
+    featured: true,
+    suggestedQuestions: [
+      "我为什么要学这门课程？",
+      "如何规划从入门到精通的学习路径？",
+      "如何设定长期学习目标并坚持下去？",
+      "我想在短时间内高效提升某项技能，该如何设计计划？",
+    ],
+  },
+  {
+    id: "piaget",
+    name: "让·皮亚杰",
+    title: "发展心理学家",
+    avatar: "../assets/images/mentors/piaget.jpeg",
+    shortBio: "儿童认知发展与学习心理学专家，擅长激活旧知和纠正认知偏差。",
+    bio: "皮亚杰以儿童认知发展理论闻名，他的工作强调知识结构的建构与认知阶段对学习的影响。在学习过程中，他帮助学习者激活已有知识、构建清晰概念框架并纠正误解。",
+    expertise: ["认知发展", "概念构建", "认知重构", "旧知激活", "元认知"],
+    featured: true,
+    suggestedQuestions: [
+      "我对这部分内容了解多少？",
+      "我总是混淆这两个概念，应该怎么区分？",
+      "如何把已有知识连接到新学习内容？",
+      "我的理解存在偏差，如何修正？",
+    ],
+  },
+  {
+    id: "dewey",
+    name: "约翰·杜威",
+    title: "教育学家、哲学家",
+    avatar: "../assets/images/mentors/dewey.jpeg",
+    shortBio: "现代教育理论的奠基人，强调反思与实践在学习中的作用。",
+    bio: '杜威主张"做中学"，认为学习需要通过实践、反思和自我评估不断完善理解。他帮助学习者在课程复盘和技能测试中发现偏差、改进策略。',
+    expertise: ["反思学习", "课程复盘", "技能评估", "实践学习", "元认知"],
+    featured: true,
+    suggestedQuestions: [
+      "我学了很多，但不确定掌握没。",
+      "帮我总结一下这节课的重点。",
+      "测一下我当前的学习水平。",
+      "如何发现自己的认知盲点？",
+    ],
+  },
+  {
+    id: "ebbinghaus",
+    name: "赫尔曼·艾宾浩斯",
+    title: "心理学家、记忆研究专家",
+    avatar: "../assets/images/mentors/ebbinghaus.jpeg",
+    shortBio: "记忆科学奠基人，专注长期记忆与学习习惯养成。",
+    bio: "艾宾浩斯发现遗忘曲线和间隔重复规律，为学习策略提供科学依据。他能帮助学习者巩固记忆、养成长期学习习惯，并优化复习计划。",
+    expertise: ["记忆科学", "间隔重复", "长期记忆", "复习策略", "习惯养成"],
+    featured: true,
+    suggestedQuestions: [
+      "我总是过几天就忘，如何改进？",
+      "帮我规划一个长期学习计划。",
+      "如何安排复习节奏以提高记忆效果？",
+      "怎样把零散知识内化为长期记忆？",
+    ],
+  },
+  {
+    id: "hilbert",
+    name: "大卫·希尔伯特",
+    title: "数学家",
+    avatar: "../assets/images/mentors/hilbert.jpeg",
+    shortBio: "数学和逻辑大师，擅长将知识转化为能力。",
+    bio: "希尔伯特以系统化和逻辑化思维闻名，强调通过练习和应用掌握知识。他帮助学习者在练习与技能测试中建立能力、发现问题并获得反馈。",
+    expertise: ["逻辑思维", "练习应用", "技能转化", "题目设计", "能力培养"],
+    featured: false,
+    suggestedQuestions: [
+      "我知道公式但不会用，该怎么练？",
+      "帮我做一份考前冲刺计划。",
+      "测一下我这方面学得怎么样。",
+      "如何通过练习巩固技能？",
+    ],
+  },
+  {
+    id: "aristotle",
+    name: "亚里士多德",
+    title: "哲学家、逻辑学家",
+    avatar: "../assets/images/mentors/aristotle.jpeg",
+    shortBio: "古希腊哲学大师，擅长知识组织和概念系统构建。",
+    bio: "亚里士多德强调逻辑与体系化思维，帮助学习者把零散信息整合为结构化知识，进行跨学科类比和迁移。",
+    expertise: ["逻辑思维", "知识组织", "概念结构", "跨学科类比", "学习迁移"],
+    featured: false,
+    suggestedQuestions: [
+      "我知道概念，但分不清关系。",
+      "如何把知识迁移到新情境中？",
+      "这个理论能不能用在别的领域？",
+      "我如何把零散信息整合成体系？",
+    ],
+  },
+  {
+    id: "jobs",
+    name: "史蒂夫·乔布斯",
+    title: "企业家、创新设计大师",
+    avatar: "../assets/images/mentors/jobs.jpeg",
+    shortBio: "创新和创造力的代表人物，擅长知识迁移与创造性应用。",
+    bio: "乔布斯以创新设计和跨领域思维著称，强调将知识应用于实际项目和创新场景。他帮助学习者进行创造性迁移和项目实践。",
+    expertise: ["创造性思维", "项目应用", "跨学科迁移", "创新实践", "设计思维"],
+    featured: false,
+    suggestedQuestions: [
+      "能不能把这个方法用到别的领域？",
+      "我想做一个小项目练习知识应用。",
+      "如何把理论转化为创新作品？",
+      "我如何激发创造力完成学习任务？",
+    ],
+  },
+  // 新增自定义导师示例
+  // {
+  //     id: 'custom-mentor',
+  //     name: '自定义导师',
+  //     title: '您的领域专家',
+  //     avatar: 'https://via.placeholder.com/400x400?text=Custom+Mentor',
+  //     shortBio: '这是一个自定义导师的示例，您可以根据需要修改其信息和专业领域。',
+  //     bio: '您可以在这里添加详细的导师背景介绍，包括其专业经历、核心理念、成功案例等。这些信息将被用于构建AI的回答风格和知识背景。',
+  //     expertise: ['自定义领域1', '自定义领域2', '自定义领域3'],
+  //     featured: false,
+  //     suggestedQuestions: [
+  //         '您的自定义问题1？',
+  //         '您的自定义问题2？',
+  //         '您的自定义问题3？',
+  //         '您的自定义问题4？'
+  //     ]
+  // }
 ];
 
 // 导出导师数据
 // 浏览器环境 - 使用全局变量
-if (typeof window !== 'undefined') {
-    window.mentorsData = { mentors };
+if (typeof window !== "undefined") {
+  window.mentorsData = { mentors };
 }
 
 // Node.js环境 - 使用module.exports
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { mentors };
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { mentors };
 }
-
