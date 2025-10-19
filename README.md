@@ -4,7 +4,7 @@
 
 ## 🌐 在线体验
 
-**🚀 立即访问**: [https://yangyuxin-hub.github.io/mindlink-platform/](https://yangyuxin-hub.github.io/mindlink-platform/)
+**🚀 立即访问**: [https://ver0810.github.io/MindLink/](https://ver0810.github.io/MindLink/)
 
 ## ✨ 功能特色
 
