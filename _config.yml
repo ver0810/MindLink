@@ -1,0 +1,37 @@
+# Jekyll configuration for GitHub Pages
+
+# Exclude files and directories from Jekyll processing
+exclude:
+  - backend/
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - api-test-suite.ps1
+  - API测试指南.md
+  - README.md
+  - vendor/
+  - Gemfile
+  - Gemfile.lock
+
+# Keep files that should not be excluded
+keep_files:
+  - assets/
+  - css/
+  - js/
+  - pages/
+  - index.html
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+# Plugin settings
+plugins:
+  - jekyll-relative-links
+
+# Relative links settings
+relative_links:
+  enabled: true
+  collections: true

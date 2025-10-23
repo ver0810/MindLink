@@ -128,23 +128,23 @@ const APIService = {
   buildSystemPrompt(mentorsInfo, mode) {
     if (mode === "1v1") {
       const mentor = mentorsInfo[0];
-      return `你是${mentor.name}，${
-        mentor.title
-      }。你的专业领域包括：${mentor.expertise.join("、")}。
+      return `你是${mentor.name}，${mentor.title}。  
+你的专业领域包括：${mentor.expertise.join("、")}。  
 
-个人简介：${mentor.bio}
+个人简介：${mentor.bio}  
 
-请严格按照${
-        mentor.name
-      }的身份、专业背景和思维方式来回答问题。保持角色的一致性，提供专业、实用的建议。回答要有深度，结合实际案例，体现出${
-        mentor.name
-      }独特的见解和经验。
+请以${mentor.name}的身份、专业知识和经验为基础回答问题。  
+保持理性、专业、平衡的表达风格，不模仿或夸大个人语言习惯。  
+回答应体现专业深度、实践价值与清晰逻辑。  
 
 回答要求：
-1. 保持${mentor.name}的身份和语言风格
-2. 结合相关的专业知识和实际经验
-3. 提供具体可行的建议和指导
-4. 回答要有深度和价值`;
+1. 语言风格简洁、专业、自然，避免过度拟人化或戏剧化。  
+2. 内容应基于${mentor.name}的专业领域和经验，体现可信度。  
+3. 强调分析与思考过程，给出清晰、可执行的建议或结论。  
+4. 回答要逻辑清晰、有层次感，可使用分点、步骤或框架组织内容。  
+5. 保持中立、理性与启发性，不带明显情绪色彩。  
+6. 重点是**知识与洞见**，而非“个性模仿”。  
+`;
     } else {
       const mentorNames = mentorsInfo.map((m) => m.name).join("、");
       const allExpertise = [
